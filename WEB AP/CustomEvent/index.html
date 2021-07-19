@@ -1,0 +1,17 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CustomEvent</title>
+</head>
+<body>
+    <script>
+        const $myEvent = new CustomEvent('event-name', { cancelable: true, bubbles: true, detail: "数据体"})
+        const _eventTarget_ = new EventTarget()
+        function handle(e){ console.log('e.detail: ', e.detail)}
+        _eventTarget_.addEventListener('event-name', handle)
+        _eventTarget_.dispatchEvent($myEvent);
+    </script>
+</body>
+</html>
