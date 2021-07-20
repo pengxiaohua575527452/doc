@@ -1,0 +1,40 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>监听元素的属性</title>
+</head>
+<body>
+    <p>能够实现属性的监听</p>
+    <script>
+        customElements.define('my-comp', class extends HTMLElement{
+            static get observedAttributes(){
+                return ['name']
+            }
+
+            constructor(){ 
+                super()
+            }
+
+            attributeChangedCallback(prop, oldValue, newValue){
+                console.log('属性发生了变化', prop, oldValue, newValue)
+            }
+
+            get name(){
+                return this._name;
+            }
+
+            set name(v){
+                this._name = v;
+                this.setAttribute('name', v)
+            }
+        })
+    </script>
+    <my-comp name="aa"></my-comp>
+    <script>
+        const _myComp_ = document.querySelector('my-comp');
+        _myComp_.name = "bill";
+    </script>
+</body>
+</html>

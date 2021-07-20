@@ -1,0 +1,88 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MutationObserver 实现监听自定义元素的属性</title>
+</head>
+<body>
+    <p>
+        mutationObserver 能够实现对 某一个 html 元素标签的 属性，子节点，后代节点进行变化的监听
+        一单相关属性发生了便会，就能偶触发回调
+        
+    </p>
+    <p>有点事 能够向任意的元素 添加监听</p>
+    <p>缺点是 无法监听 元素的初始化 标签上的赋值</p>
+    <script>
+        class HTMLMyCompElement extends HTMLElement{
+            constructor(){
+                super()
+            }
+
+            connectedCallback(){
+                console.log('this.attributes: ', this.attributes)
+                const attributes = this.attributes 
+                for(const attribute of this.attributes){
+                    console.log('attribute: ', attribute.name, attribute.value)
+                    this[attribute.name] = attribute.value;
+                }
+            }
+
+            get target(){
+                return this._target;
+            }
+
+            set target(v){
+                this._target = v;
+                this.setAttribute('target',v)
+            }
+        }
+        // 创建自定义属性
+        customElements.define('my-comp', HTMLMyCompElement)
+    
+
+        // 创建 MutationObserver 对象的实例 [创建一个观察者]
+        // 执行观察
+
+    </script>
+    <!-- 这里 init 值无法监听到 -->
+    <my-comp target="init"></my-comp>
+    <script>
+        const _myComp_ = document.querySelector('my-comp');
+
+        function mutationObserverCallback(mutationList, observer){
+            console.log('mutationList: ', mutationList)
+
+            mutationList.forEach(mutation => {
+                console.log('mutation: ', mutation)
+                switch(mutation.type){
+                    case "childList": mutationObserverCallbackChildList(); break;
+                    case "attributes": mutationObserverCallbackAttributes(mutation); break; 
+                }
+            })
+        }   
+
+        function mutationObserverCallbackChildList(){
+            console.log('子元素发生了变化触发的回调 ')
+        }
+        
+        function mutationObserverCallbackAttributes(mutation){
+            console.log('属性的值发生了变化触发的回调: ',mutation.target)
+
+        }
+
+        const observer = new MutationObserver(mutationObserverCallback)
+        const observeOptions = {
+            childList: true,
+            attributes: true,
+            subTree: true
+        }
+        observer.observe(_myComp_, observeOptions)
+
+        _myComp_.target = "target"
+
+        
+    </script>
+    
+</body>
+</html>

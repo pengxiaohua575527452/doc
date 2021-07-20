@@ -1,0 +1,90 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自定义元素的生命周期</title>
+</head>
+<body>
+    <script>
+        const myComp =  class extends HTMLElement{
+            static get observedAttributes(){
+                return ["target"]
+            }
+
+            constructor(){
+                super()
+            }
+
+            connectedCallback(){
+                console.log('首次被插入文档的时候调用')
+
+                
+            }
+
+            disconnectedCallback(){
+                console.log('被删除的时候调用')
+            }
+
+            adoptedCallback(){
+                console.log('被移动了')
+            }
+
+            attributeChangedCallback(prop, oldValue, newValue){
+                console.log('改变了属性', prop, oldValue, newValue)
+            }
+
+            // 实例可以通过 this.target 直接获取属性的值
+            get target(){
+                return this._target;
+            }
+
+            // 实例 可以通过 this.target = "" 直接设置属性的值
+            set target(v){
+                console.log('设置 target')
+                this.setAttribute('target', v)
+
+            }
+        }
+
+        customElements.define('my-comp', myComp)
+
+    </script>
+    <my-comp target="aaa"></my-comp>
+    <button class='add'>新增</button>
+    <button class='del'>删除</button>
+    <button class='remove'>移动</button>
+
+    <script>
+        const _myComp_ = document.querySelector('my-comp')
+        _myComp_.setAttribute('target', 'target')
+        _myComp_.target = "目标"
+
+        // 删除
+        document.querySelector('.del').addEventListener('click', () => {
+            document.body.removeChild(document.querySelector('my-comp'))
+        })
+
+        // 添加
+        document.querySelector('.add').addEventListener('click', () => {
+            document.body.appendChild( document.createElement('my-comp'))
+        })
+
+    </script>
+</body>
+</html>
+
+<!-- 
+
+   connectedCallback
+
+    disconnectedCallback()
+
+    adoptedCallback(){
+
+    }
+
+    attributeChangedCallback(prop, oldValue, newValue){
+
+    }
+ -->

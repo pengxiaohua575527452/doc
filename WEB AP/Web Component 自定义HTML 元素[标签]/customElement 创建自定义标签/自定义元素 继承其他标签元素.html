@@ -1,0 +1,37 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建自定义标签方法2</title>
+</head>
+<body>
+
+    <my-comp>aaa</my-comp>
+
+    <script>
+     
+    </script>
+    
+    <script defer>
+        customElements.define(
+            'my-comp', 
+            class extends HTMLInputElement{
+                constructor(){
+                    super()
+               
+                }
+
+                connectedCallback(){
+                    console.log('插入')
+                }
+            },
+            {
+                extends: "input"
+            }
+        )
+
+        console.log('class 里面不会被执行, 表示继承自 input 元素')
+    </script>
+</body>
+</html>

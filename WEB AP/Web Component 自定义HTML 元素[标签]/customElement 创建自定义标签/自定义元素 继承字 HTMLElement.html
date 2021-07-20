@@ -1,0 +1,18 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建 自定义标签</title>
+</head>
+<body>
+    <script>
+        customElements.define('my-comp', class extends HTMLElement{
+            constructor(){
+                super()
+            }
+        })
+    </script>
+    <my-comp></my-comp>
+</body>
+</html>

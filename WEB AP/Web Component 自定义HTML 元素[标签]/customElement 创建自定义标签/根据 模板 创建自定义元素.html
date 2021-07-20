@@ -1,0 +1,107 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>根据模板创建自定义元素</title>
+</head>
+<body>
+    <template id="template-my-comp">
+        <div class='list-item-container'>
+            <div class='avatar-container'>
+                <!-- 具名模板 -->
+                <slot name="avatar"></slot>
+            </div>
+            <div class='label-container'></div>
+        </div>
+
+        <style>
+            .list-item-container{
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                width: 100%;
+                height: 60px;
+            }
+
+            .avatar-container{
+                flex-grow: 0;
+                flex-shrink: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 50px;
+                height: 50px;
+                background: #efefef;
+            }
+
+            .label-container{
+                box-sizing: border-box;
+                margin-left: 10px;
+                width: 100%;
+                line-height: 60px;
+                height: 100%;
+                background: #efefef;
+            }
+        </style>
+    </template>
+    <script>
+        const _template = document.querySelector("#template-my-comp")
+
+        customElements.define(
+            "my-comp",
+            class extends HTMLElement{
+                static get observedAttributes(){
+                    return ['title']
+                }
+
+                update = {
+                    title: (v) => {
+                        console.log(this.shadowRoot.querySelector('.label-container'))
+                        const _label_ = this.shadowRoot.querySelector('.label-container')
+                        _label_.innerText = v;
+                    }
+                }
+
+                constructor(){
+                    super()
+                    const __template = _template.cloneNode(true)
+                    this.attachShadow({mode: "open"})
+                    this.shadowRoot.appendChild(__template.content);
+                }
+
+                attributeChangedCallback(prop, oldValue, newValue){
+                    this.update[prop](newValue)
+                }
+
+                get title(){
+                    return this._title;
+                }
+
+                set title(v){
+                    this._title = v;
+                    this.setAttribute('title', v)
+                }
+
+                fn(){
+                    console.log('fn--')
+                }
+            }
+        )
+        
+
+    </script>
+
+    <my-comp title="用户名称">
+        <!-- 使用具名模板 -->
+        <div slot='avatar'>aa</div>
+    </my-comp>
+
+    <script>
+        const _myComp_ = document.querySelector('my-comp');
+        _myComp_.title = "title"
+
+        _myComp_.fn();
+    </script>
+</body>
+</html>

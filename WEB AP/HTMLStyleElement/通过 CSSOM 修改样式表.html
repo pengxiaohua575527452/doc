@@ -1,0 +1,42 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css" title="aa">
+        body {
+            background-color: red;
+        }
+
+        html{
+            border: 1px solid red;
+        }
+    </style>
+    <style type="text/css" title="bb">
+        body {
+            border: 3px solid red;
+        }
+    </style>
+    <script type="text/javascript">
+        // document.styleSheets 返回全部的style 样式
+        for(const stylesheet of document.styleSheets){
+            // 根据 title 判断是否是指定的 style 标签的内容
+            if(stylesheet.title === "aa"){
+                console.log(stylesheet)
+                for(const cssRule of stylesheet.cssRules){
+                    console.log(cssRule)
+                    // 根据 selectorText 选择器 判断是否是指定的元素样式
+                    if(cssRule.selectorText === 'body'){
+                        // 通过 style 对象 设置样式
+                        cssRule.style.backgroundColor = 'yellow'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

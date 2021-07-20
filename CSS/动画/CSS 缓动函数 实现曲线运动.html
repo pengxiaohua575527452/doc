@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS 缓动函数</title>
+</head>
+<body>
+    <!-- 
+        如果通过 CSS 缓动函数实现元素的弧线运动[曲线运动]
+
+        css 缓动函数 视图效果 X 表示时间轴 Y 轴表示位置轴
+        
+     -->
+
+    <div class='div1'>
+
+        <div class='div2'></div>
+    </div>
+    <style>
+        .div1{
+            position: absolute;
+            left: 100px;
+            top: 500px;
+            width: 500px;
+            height: 50px;
+            /* background: #ccc; */
+            transform: translateY(0);
+            /* transition: transform 1s  cubic-bezier(0.5, 3, 0.5, -3); */
+            transition: transform 1s linear;
+        }
+
+        .div2{
+            position: relative;
+            width: 50px;
+            height: 50px;
+            background: red;
+            transform: translateX(0);
+            transition: transform 1s cubic-bezier(0.5, 2, 0.5, -1);
+        }
+    </style>
+    <script>
+        const _div1_ = document.querySelector('.div1');
+        const _div2_ = document.querySelector('.div2')
+        
+        setTimeout(() => {
+            _div1_.style.transform = "translateY(-500px)";
+            _div2_.style.transform = "translateX(500px)";
+        },500)
+    </script>
+</body>
+</html>
+
+<!-- 
+    transition: 控制 transform 一个值的变化
+
+
+
+
+ -->

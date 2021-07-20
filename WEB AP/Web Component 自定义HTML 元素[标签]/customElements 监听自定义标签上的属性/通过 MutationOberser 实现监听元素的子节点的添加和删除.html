@@ -1,0 +1,62 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MutationObserver 实现监听元素的子节点的变化</title>
+</head>
+<body>
+    <script type="text/javascript">
+        // 注册自定义元素
+        customElements.define(
+            "my-comp",
+            class extends HTMLElement{
+                constructor(){
+                    super()
+                    this.observer = new MutationObserver(this.observerCallback)
+                }
+
+                observeOptions = {
+                    childList: true
+                }
+
+                connectedCallback(){
+                    console.log('元素载入完成')
+                    this.observer.observe(this, this.observeOptions)
+                }
+
+                observerCallback = (mutationList, observer) => {
+                    mutationList.forEach(mutation => {
+                        switch(mutation.type){
+                            case 'childList': this.observerCallbackChildList(mutation); break; 
+                        }
+                    })
+                }
+
+                observerCallbackChildList = (mutation) => {
+                    console.log('childList 发生了变化： ', mutation)
+                }
+            }
+        )
+    </script>
+    <my-comp></my-comp>
+    <button class="add">添加子元素</button>
+    <button class="del">删除全部的子元素</button>
+
+    <script>
+        const _myComp_ = document.querySelector('my-comp');
+        const _div_ = document.createElement('div')
+        _div_.innerText = "innerText"
+        _myComp_.appendChild(_div_)
+
+
+        document.querySelector('.add').addEventListener('click', () => {
+            _myComp_.appendChild(document.createElement('div'))
+        })
+
+        document.querySelector('.del').addEventListener('click', () => {
+            _myComp_.innerHTML = ""
+        })
+    </script>
+</body>
+</html>
