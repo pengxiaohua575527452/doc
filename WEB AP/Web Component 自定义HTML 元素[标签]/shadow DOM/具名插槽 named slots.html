@@ -1,0 +1,85 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>具名插槽</title>
+</head>
+<body>
+    <template id='template'>
+        <div class='list-item-layout'>
+            <div class='list-item-avatar-layout'>
+                <slot name="avatar"></slot>
+            </div>
+            <div class='list-item-content-layout'>
+                <slot name="content"></slot>
+            </div>
+        </div>
+        <style>
+            .list-item-layout{
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                box-sizing: border-box;
+                padding: 0px 10px;
+                width: 100%;
+                height: 60px;
+            }
+
+            .list-item-avatar-layout{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-grow: 0;
+                flex-shrink: 0;
+                width: 50px;
+                height: 50px;
+                border-radius: 25px;
+            }
+
+            .list-item-content-layout{
+                margin-left: 10px;
+                width: 100%;
+                height: 100%;
+            }
+
+
+        </style>
+    </template>
+    <script type="text/javascript">
+        const _documentFragment_ = document.querySelector('#template').content;
+        
+
+        class HTMLMyCompElement extends HTMLElement {
+            constructor(){
+                super();
+                this.__myCompDocumentFragment_ = _documentFragment_.cloneNode(true);    
+                this.__shadowRoot_ = this.attachShadow({mode: 'open'});
+                console.log('this.__shadowRoot: ', this.shadowRoot)
+                this.__shadowRoot_.appendChild(this.__myCompDocumentFragment_)
+            }
+        }
+
+        customElements.define('my-comp', HTMLMyCompElement)
+
+    </script>
+    <my-comp>
+        <img slot="avatar" class='avatar' src="./avatar.jpg" alt="">
+        <p slot="content" class='content'>账号名称</p>
+        <p>这里的内容不需要显示</p>
+    </my-comp>
+    <style>
+        .avatar{
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .content{
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+</body>
+</html>

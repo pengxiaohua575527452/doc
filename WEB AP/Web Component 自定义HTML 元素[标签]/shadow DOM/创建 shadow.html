@@ -1,0 +1,46 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow DOM</title>
+</head>
+<body>
+    <ul>
+        <li>
+            <h3>Shadow DOM 相关术语</h3>
+        </li>
+        <li>
+            <p>Shadow host: 挂在 Shadow DOM 的普通节点</p>
+        </li>
+        <li>
+            <p>Shadow tree: Shadow DOM 内部的 DOM 属</p>
+        </li>
+        <li>
+            <p>Shadow root: Shadow tree 的根节点, 同文档的 DOM 分开渲染 </p>
+        </li>
+    </ul>
+    <ul>
+        <li>
+            <h3>总结：</h3>
+        </li>
+        <li>
+            <p>Shadow DOM 是一个呢个够挂在在普通DOM元素上的 DOM Tree</p>
+        </li>
+        <li>
+            <p>通过 element.attachShadow() 创建</p>
+        </li>
+    </ul> 
+</body>
+    <div class='host'></div>
+    <script>
+        const shadowHost = document.querySelector('.host');
+        // 创建一个 ShadowRoot 
+        const shadowRoot = shadowHost.attachShadow({mode: 'open'})
+
+        // 向 ShadowRoot 上添加内容
+        const _content_ = document.createElement('div')
+        _content_.innerText = "Shadow DOM"
+        shadowRoot.appendChild(_content_)
+    </script>
+</html>

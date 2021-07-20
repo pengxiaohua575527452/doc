@@ -1,0 +1,41 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>插槽</title>
+</head>
+<body>
+    <ul>
+        <li>
+            <h3>插槽</h3>
+        </li>
+        <li>
+            <p>web component 中用来承接 标签之间内容的 元素</p>
+        </li>
+    </ul>
+
+    <template id="template">
+        <div class='list-item-layout'>
+            <slot>默认内容</slot>
+        </div>
+    </template>
+    <script>
+        const _documentFragment_ = document.querySelector('#template').content;
+        const _myCompDocumentFrgment_ = _documentFragment_.cloneNode(true);
+
+        class HTMLMyCompElement extends HTMLElement {
+            constructor(){
+                super();
+                this.__shadowRoot_ = this.attachShadow({mode: 'closed'})
+                this.__shadowRoot_.appendChild(_myCompDocumentFrgment_);
+            }
+        }
+
+        customElements.define('my-comp', HTMLMyCompElement)
+    </script>
+    <my-comp>
+        <div>插槽的内容</div>
+    </my-comp>
+</body>
+</html>

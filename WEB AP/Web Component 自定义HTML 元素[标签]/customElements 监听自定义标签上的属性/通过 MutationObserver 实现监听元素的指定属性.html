@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>监听元素指定的属性值的变化 title</p>
+    <script>
+        const observer = new MutationObserver(mutationObserverCallback)
+
+        /**
+         * 处理器
+        */
+        function mutationObserverCallback(mutationRecords, observer){
+            mutationRecords.forEach(mutationRecord => {
+                switch(mutationRecord.type){
+                    case "attributes": mutationObserverCallbackAttibutes(mutationRecord); break;
+                }
+            })
+        }
+
+        /**
+         * 元素的 属性变化状态下的处理器
+        */
+        function mutationObserverCallbackAttibutes(mutationRecord){
+            console.log('mutationRecord: ', mutationRecord)
+        }
+
+        
+        customElements.define('my-comp', class extends HTMLElement{
+
+            constructor(){
+                super();
+            }
+
+            connectedCallback(){
+                const mutationObserverInit = {
+                    attributeFilter: ['title'], // 定义监听的属性
+                    attributeOldValue: true,
+                    attributes: true,
+                }
+                observer.observe(this, mutationObserverInit)
+            }
+
+            get title(){
+                return this._title;
+            }
+
+            set title(title){
+                this._title = title;
+                this.setAttribute('title', title)
+            }
+
+
+        })
+    </script>
+    <my-comp />
+    <script>
+        const _myComp_ = document.querySelector('my-comp')
+        _myComp_.title = 'title1'
+        setTimeout(() => {
+            _myComp_.title = "title2"
+
+            setTimeout(() => {
+                _myComp_.setAttribute('name', "name")
+            }, 1000)
+        }, 1000)
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,56 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MutationObserver</title>
+</head>
+<body>
+    <p>通过 MutationObserver 实现 对文本节点变化的监听</p>
+    <script type="text/javascript">
+        const observer = new MutationObserver(mutationObserverCallback)
+        const observeOptions = {
+            characterData: true,
+            characterDataOldValue: true,
+            childList: true,
+            subtree: true,
+        }
+
+        function mutationObserverCallback(mutationRecords, observer){
+            mutationRecords.forEach(mutationRecord => {
+                console.log("mutationRecord: ", mutationRecord)
+                switch(mutationRecord.type){
+                    case "characterData": mutationObserverCallbackCharacterData(mutationRecord); break;
+                }
+            })
+        }
+
+        function mutationObserverCallbackCharacterData(mutationRecord){
+            console.log('文本节点发生了变化： ', mutationRecord)
+        }
+
+        // 创建自定义标签元素
+        customElements.define('my-comp', class extends HTMLElement{
+            constructor(){
+                super()
+            }
+
+            connectedCallback(){
+                console.log("元素已经插入")
+                observer.observe(this, observeOptions)
+            }
+        })
+
+    </script>
+    <my-comp></my-comp>
+    <script>
+        const _myComp_ = document.querySelector('my-comp');
+        setTimeout(() => {
+            _myComp_.innerText = "aa"
+            setTimeout(() => {
+                _myComp_.innerText = "bb"
+            }, 1000)
+        },1000)
+    </script>
+</body>
+</html>
