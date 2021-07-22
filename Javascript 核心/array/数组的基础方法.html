@@ -1,0 +1,32 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数组的基础方法</title>
+</head>
+<body>
+    <h3>删除数组项 Array.prototype.splice(delIndex, delCount, [item……])</h3>     
+    <p><code>delIndex</code>删除的索引位置</p>
+    <p><code>delCount</code>删除的数量</p>
+    <p><code>item</code>在删除的位置上添加的项<strong>可选</strong></p>
+    <p>返回 由被删除的项组成的数组</p>
+    <p>会修改原来的数组</p>
+    <script>
+        const arr = ['a', 'b', 'c']
+        const delArr = arr.splice(1,1, '11')
+        console.log('delArr: ', delArr)
+        console.log('arr: ', arr)
+    </script>
+
+
+    <h3>拼接两个或多个数组/数组项 Array.prototype.concat(arr1, arr2)</h3>
+    <p><pre>arr1</pre> 参数可以是数组 也可以是数组的某一项</p>
+    <p><pre>缺少参数</pre> 直接返回数组的浅拷贝</p>
+    <p></p>
+    <script>
+        
+    </script>
+    
+</body>
+</html>

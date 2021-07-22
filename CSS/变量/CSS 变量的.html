@@ -1,0 +1,95 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        <li>
+            <h3>CSS 变量声明和使用</h3>
+        </li>
+        <li>
+            <ul>
+                <li>
+                    <h5>变量的声明</h5>
+                </li>
+                <li>
+                    <code>:root{ --var-name: value;}</code>
+                </li>
+                <li>
+                    <code>:root</code>
+                    <p>通过选择器 定义变量的作用域范围</p>
+                    <p>只有当前选择器的 子元素 和自身 能够使用定义的变量</p>
+                    <p>子选择器定义的变量 会覆盖 祖先选择器定义的变量 值</p>
+                    <p>:root 表示全局作用域</p>
+                </li>
+                <li>
+                    <code>--var-name</code>
+                    <p>变量的名称</p>
+                    <p>--开头是规范</p>
+                    <p>-作为连接符</p>
+                </li>
+                <li>
+                    <code>value</code>
+                    <p>变量的值</p>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <ul>
+                <li>
+                    <h5>变量的使用</h5>
+                </li>
+                <li>
+                    <code>.child{ color: var(--color);}</code>
+                </li>
+                <li>
+                    <code>var()</code>
+                    <p>使用标量的函数</p>
+                </li>
+                <li>
+                    <code>--color</code>
+                    <p>变量的名称</p>
+                </li>
+                <li>
+                    <p>在控制台 css 值依然显示 var(--color) </p>
+                    <p>不会 显示计算的结果</p>
+                </li>
+            </ul>
+
+        </li>
+        
+    </ul>
+
+
+    <div class='parent'>parent
+        <div class="child">
+            child
+        </div>
+    </div>
+
+    <style>
+        :root {
+            --color: red;
+            --border: 10px solid red;
+        }
+
+        .parent {
+            --font-color: blue;
+            --border: 1px solid red;
+        }
+
+        .parent{
+            color: var(--color);
+
+        }
+
+        .child{
+            color: var(--font-color);
+            border: var(--border);
+        }
+    </style>
+</body>
+</html>

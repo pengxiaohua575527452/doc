@@ -1,0 +1,78 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        <li>
+            <h3>transform: translateX(value的单位)</h3>
+        </li>
+        <li>
+            <p>可以接受 百分比 百分比的具体值是已 元素自身的宽度位基础的</p>
+        </li>
+        <li>
+            <p><code>transform: translateX(50%) translateY(50%);</code></p>
+        </li>
+        <li>
+            <p class='code'></p>
+        </li>
+        <li>
+            <p>效果</p>
+            <div class='out'>
+                <div class="inside"></div>
+            </div>
+        </li>
+    </ul>
+    <style>
+        div{
+            margin: 0rem;
+            padding: 0rem;
+            box-sizing: border-box;
+        }
+        .out{
+            width: 200px;
+            height: 100px;
+            background: #eee;
+        }
+        .inside{
+            width: 100px;
+            height: 50px;
+            transform: translateX(50%) translateY(50%);
+            background: #ccc;
+        }
+    </style>
+    <script>
+        str = `
+            <div class='out'>
+                <div class="inside"></div>
+            </div>
+
+            <style>
+                div{
+                    margin: 0rem;
+                    padding: 0rem;
+                    box-sizing: border-box;
+                }
+                .out{
+                    width: 200px;
+                    height: 100px;
+                    background: #eee;
+                }
+                .inside{
+                    width: 100px;
+                    height: 50px;
+                    // 50% 是基于元素自身的高度和宽度
+                    transform: translateX(50%) translateY(50%);
+                    background: #ccc;
+                }
+            </style>
+        `
+
+        document.querySelector('.code').innerText = str
+    </script>
+    
+</body>
+</html>

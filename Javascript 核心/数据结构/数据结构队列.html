@@ -1,0 +1,62 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        <li>
+            <h3>队列</h3>
+        </li>
+        <li>
+            <p>
+                队列的核心 就是先进先出
+            </p>
+        </li>
+    </ul>
+    <script>
+        // 数据结构队列
+
+        let items = [];
+        
+        // 进入列
+        function enqueue(item){
+            items.push(item)
+            return items;
+        }
+
+        // 删除队列的第一项
+        function dequeue(){
+            return items.shift()
+        }
+
+        /**
+         * 返回队列的第一项
+        */
+        function front(){
+            return items[0]
+        }
+
+        /**
+         * 检查是否为空
+        */
+        function isEmpty(){
+            return items.length === 0;
+        }
+
+        /**
+         * 返回队列的长度
+        */
+        function size(){
+            return items.length;
+        }
+
+        
+    </script>
+    
+</body>
+</html>
+
+ 
