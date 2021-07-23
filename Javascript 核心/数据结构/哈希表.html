@@ -1,0 +1,102 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    
+    <!-- 
+        
+        哈希表的使用场景分析：
+            - 数据库的索引 就是使用的 hash
+            - hash 能够快速的从一组数据中查找到我们需要的数据体
+            - 在javascript 算法中, 数组，对象等 应用类型的数据都是保存的指针
+            - 所以，我们可以 把一个一个的个体数据，根据我们的使用需求
+            - 生成不同的整体对象
+            - 例如 一个班的全部学生数据
+            - 学生是一个一个的数据体
+            - 那么整体对象可以是
+            - arr 把全部的学生一次保存起来
+            - hash table 已名称作为hash值算法的参数
+            - 语文测验后 已语文成绩作为 hash 值算法的参数 
+            - 这样我们得到了三个整体对象
+            - array 
+            - hasTable[index === hash(name)] / hash冲突用数组保存
+            - hashTable[index === hash(scores)]// hash冲突用数组保存
+            - 当我们需要查询 某一个姓名的学生数据的时候 
+                - 我们就不需要遍历 array
+                - 可以直接从 hashTable[index === hash(name)] 这个对象中查询
+                - 这样就能够快速的找到匹配name的全部数据
+            - 当我们需要查找 学生成绩是 90 分的学生数据的时候
+                - 我们同样不需要遍历 array
+                - 可以直接从 hashTable[index === hash(scores)] 中查找
+                - 快速的找到全部匹配 分数的 学生
+            - 因为 array | hashTable 都是引用对象, 所以
+                - 所以 我们修改一个学生的数据, 那么在 array | hashTable 中都是同步修改的；
+            - javascript 算法的核心 
+                - 就是如何从逻辑层级 组合数据
+                - 相同范围内的n个独立的数据体，我们可以采用 多个 整体引用对象 保存，
+                - 引用对象只保存指针，所以不会而外增加太多的内存
+                - 优秀的算法，能够实现在组合数据中的 快速 [增加 删除 修改 查找] 其中最核心的就是 查找
+                - 能够快速的查找到我们的需要的独立数据，那么这个数据结构就是好的；
+                - 如果不需要遍历，就不要遍历最好；
+                - 独立的数据体， 可以根据不同的 查找条件 生成 完整数据体
+            - leetcode 算法
+                - 基础就是 独立数据的组合方式
+            
+
+        1：我们需要保存一组学生的信息
+
+        let bill = {id: "1", name: "bill", data: ""}
+
+        let jack = {id: "2", name: "jack", data: ""}
+
+        let tom = {id: '3', name: "tom", data: ""}
+
+        let tom2 = {id: '4', name: 'tom', data: ""}
+
+        // 数组的保存方式
+        // 如果我们需要修改某一个学生的信息
+        // 就需要查找到这个学生数据
+        // 使用数组保存的，我们就需要遍历这个数组
+        // 检查这个数组中的项，是否匹配我们查找的方式
+        // 如果数组有 1000万条， 刚好查找的就是最后一条
+        // 那么这个效率就非常的慢了;
+        let student = [bill, jack, tom]
+
+        // 用 hash 表来保存
+        // hash 的生成标准 必须同我们之后查找的方式匹配起来
+        // 例如
+        // 如果我们查找是通过 name 属性，那么我们就可以
+        // 根据 name 的属性值来生成 hash 值 
+        // 
+
+        例如： 如果我们需要用根据名称查找 可以设计成下的数据结构
+        let arr = []
+        let hashArray = [hash(bill.name), hash(jack.name), hash(tom.name),hash(tom2.name)]
+        function hash(){} // 根据给地的字符串生成 hash 
+        arr[hash(bill.name)] = [bill]
+        arr[hash(jack.name)] = [jack]
+        arr[hash(tom.name)] = [tom]
+        arr[hash(tom2.name)] = [tom, tom2] // 采用数组处理hash冲突
+
+        也可以采用
+        let o = {}
+        function hash(){}
+        o[hash(bill.name)] = [bill]
+        o[hash(jack.name)] = [jack]
+        o[hash(tom.name)] = [tom]
+        o[hash(tom2.name)] = [tom, tom2] // 采用数组处理hash冲突
+        
+        采用 arr 遍历较慢有许多的空位置[当然我们也可以配合另一个arr保存所有的hash值，直接这个保存hash值的数据也可以]
+        采用 object 遍历较快
+
+
+        
+
+     -->
+</body>
+</html>
