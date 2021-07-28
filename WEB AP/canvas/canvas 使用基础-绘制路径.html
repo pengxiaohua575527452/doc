@@ -1,0 +1,42 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+</head>
+<body>
+    <script>
+        const _canvas_ = document.createElement('canvas')
+        _canvas_.innerText = "浏览器版本太低无法使用Canvas"
+        _canvas_.setAttribute('width', "500px")
+        _canvas_.setAttribute('height', "500px")
+        _canvas_.className = "canvas"
+        document.body.appendChild(_canvas_)
+
+        const _style_ = document.createElement('style')
+        _style_.innerText = `
+            .canvas{
+                border: 1px solid red;
+            }
+        `
+        document.body.appendChild(_style_)
+        
+        // 返回一个 CanvasRenderingContext2D 对象
+        // 使用 CanvasRenderingContext2D 对象实现绘制
+        const ctx = _canvas_.getContext('2d')
+
+        ctx.beginPath();
+        ctx.moveTo(20,20);
+        ctx.lineTo(200,20);
+        ctx.stroke();
+
+
+        ctx.beginPath()
+        ctx.moveTo(20, 20)
+        ctx.lineTo(20, 100)
+        ctx.stroke();
+
+    </script>
+</body>
+</html>

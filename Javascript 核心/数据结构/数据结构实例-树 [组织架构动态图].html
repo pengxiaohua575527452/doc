@@ -237,6 +237,8 @@
                 this.parentPost.child.push(post)
                 this.lastPost = post;
                 console.error('还需要修改 canvas')
+                const _organizationChart_ = document.querySelector("organization-chart")
+                _organizationChart_.draw(this.postTree)
             }
 
             // 删除的操作比较的麻烦
@@ -253,6 +255,8 @@
                     this._selectPost_.removeChild(this._selectPost_.querySelector(`#postOption${post.id}`))
                     this._inputDel_.value = "";
                     console.log('删除完毕', this.postTree)
+                    const _organizationChart_ = document.querySelector("organization-chart")
+                    _organizationChart_.draw(this.postTree)
                 }else{
                     console.error('没有找到匹配的项')
                 }
@@ -286,6 +290,225 @@
             }
         })
        
+    </script>
+    <organization-chart></organization-chart>
+
+    <script>
+
+        // {
+        //     id: this.lastPost ? this.lastPost.id + 1 : 1,
+        //     series: this.series,
+        //     level: this.level,
+        //     name: this.postName,
+        //     parent: this.parentPost ? this.parentPost : null, 
+        //     child: []
+        // }
+    
+        // 绘制组织结构图
+        customElements.define('organization-chart', class extends HTMLElement{
+            _canvas_;
+            _shadowRoot_;
+            // 能够完整显示元素的最小值
+            minWidth;
+            minHeight;
+            padding = 20;
+            // 单一元素的宽度
+            singleRectWidth = 100;
+            singleRectHeight = 50
+            // 元素之间的宽度
+            // 元素之间的高度
+            spaceWidth = 50
+            spaceHeight = 50
+
+            constructor(){
+                super()
+
+                this._canvas_ = document.createElement('canvas');
+                this._canvas_.setAttribute('width', 1300)
+                this._canvas_.setAttribute('height', 1300)
+                this._canvas_.style.border = "1px solid red"
+                
+                this.ctx = this._canvas_.getContext('2d');
+                this._shadowRoot_ = this.attachShadow({mode: "open"});
+                console.log('this._cavnas_', this._canvas_)
+                this._shadowRoot_.appendChild(this._canvas_)
+            }
+
+            // 根据 每层的宽度 更新最小宽度宽度
+            // kuan
+            updateMinWidth = (tree) =>{
+                
+            }
+
+            // 更新高度
+            updateMinHeight = (tree) => {
+
+            }
+
+            draw = (post) => {
+                this.ctx.clearRect(0,0, 1000,1000)
+                // 获取每个元素的宽度范围
+                this.getPostRange(post)
+
+                this.drawPreocess(post, this.spaceWidth)
+
+            }
+
+            // post 元素
+            // preLeft 元素左边的前置余量
+            drawPreocess = (post, preLeft) => {
+                console.log('post, preLeft: ', post, preLeft,  post.canvasWidth)
+                // 获取需要绘制当前节点的中心位置
+                let centerX = post.canvasWidth /2 + preLeft;
+
+                let topLeftX = centerX - this.singleRectWidth / 2
+                let topLeftY;
+
+                // 如果没有parent
+                if(!post.parent){
+                    topLeftY = 20
+                }else{
+                    topLeftY = post.parent.bottom + this.spaceHeight;
+                }
+
+                // 设置元素的下边界
+                post.bottom = topLeftY + this.singleRectHeight;
+                // 设置元素的左边边界
+                post.left = centerX - (post.canvasWidth / 2) 
+
+                // 绘制线条
+                if(post.parent){
+                    this.ctx.beginPath()
+                    this.ctx.moveTo(
+                        post.parent.left + post.parent.canvasWidth / 2,
+                        post.parent.bottom 
+                    )
+                    this.ctx.lineTo(
+                        post.left + post.canvasWidth / 2,
+                        post.bottom - this.singleRectHeight
+                    )
+                    this.ctx.stroke()
+                }
+               
+                // this.ctx.fillStyle = "#333"
+                this.ctx.strokeRect(
+                    topLeftX,
+                    topLeftY, 
+                    this.singleRectWidth, 
+                    this.singleRectHeight
+                )
+
+                // this.ctx.fillStyle = "red"
+                this.ctx.textAlign = "center"
+                this.ctx.fillText(post.name,centerX, topLeftY + this.singleRectHeight /2)
+
+                if(post.child && post.child.length > 0){
+                    post.child.forEach((_post, i) => {
+                        let preLeft = post.left
+                        let a = post.child.slice(0, i+1)
+
+                        a.forEach((item, j)=> {
+                            if(j > 0){
+                                preLeft = preLeft + a[j - 1].canvasWidth + this.spaceWidth;
+                            }
+                        })
+                        this.drawPreocess(_post, preLeft)
+                    })
+                }
+            }
+
+            // 获取元素应该占据的宽度
+            getPostRange(post, index){
+                let width = this.singleRectWidth;
+
+                if(post.child && post.child.length > 0){
+                    post.child.forEach(_post => {
+                        this.getPostRange(_post)
+                    })
+                    width = post.child.reduce((accumulator, _post, index) => {
+                        return {
+                            canvasWidth: accumulator.canvasWidth + _post.canvasWidth + index * this.spaceWidth
+                        }
+                    }).canvasWidth;
+                }
+                post.canvasWidth = width;
+            }
+
+            // 需要实现数组的层遍历
+        })
+
+        const root = {
+                id: 0,
+                series: null,
+                level: null,
+                name: "虚拟root节点",
+                parent: null,
+                child: []
+            }
+        const level1_1 = {
+                id: 1,
+                series: null,
+                level: null,
+                name: "1",
+                parent: root,
+                child: []
+            }
+        const level1_2 = {
+                id: 2,
+                series: null,
+                level: null,
+                name: "2",
+                parent: root,
+                child: []
+            }
+        const level1_1_1 = {
+                id: 3,
+                series: null,
+                level: null,
+                name: "3",
+                parent: level1_1,
+                child: []
+            }
+        const level1_1_2 = {
+                id: 4,
+                series: null,
+                level: null,
+                name: "4",
+                parent: level1_1,
+                child: []
+            }
+        const level1_2_1 = {
+                id: 5,
+                series: null,
+                level: null,
+                name: "5",
+                parent: level1_2,
+                child: []
+            }
+        const level1_2_2 = {
+                id: 6,
+                series: null,
+                level: null,
+                name: "6",
+                parent: level1_2,
+                child: []
+            }
+
+        root.child = [level1_1, level1_2]
+        level1_1.child = [level1_1_1, level1_1_2]
+        level1_2.child = [level1_2_1, level1_2_2]
+        
+        setTimeout(() => {
+            const _organizationChart_ = document.querySelector("organization-chart")
+            _organizationChart_.draw(root)
+        },1000)
+
+
+    
+
+
+
+
     </script>
     
        
