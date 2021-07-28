@@ -1,0 +1,141 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        <li>
+            <h3>模糊效果 [模糊背景]</h3>
+        </li>
+        <li>制作磨砂玻璃一般的效果</li>
+        <li>能够用来模糊 视觉上 元素范围内 视图</li>
+        <li>实例</li>
+        <li class='code1'>
+        </li>
+        <li>
+            <div class='out'>
+                <div class="box inside">backdrop-filter: blur(10px) </div>
+                <div class="box brightness">backdrop-filter: bright(50%)</div>
+                <div class='box contrast'>backdrop-filter: contrast(50%)</div>
+                <div class="box saturate">饱和度： saturate(100%)</div>
+                <div class="box hue-rotate">色相旋转 hue-rotate(120deg)</div>
+                <div class="box invert">颜色反转 invert(100%)</div>
+                <div class="box sepia">颜色转为 深褐色 sepia(100%)</div>
+            </div>
+        </li>
+    </ul>
+     
+    <style>
+        .out{
+            width: 1000px;
+            height: 500px;
+            background: url(./1.jpeg);
+        }
+
+        .box{
+            display: inline-block;
+            padding: 30px 50px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0);
+            color: #fff;
+        }
+
+        .inside{
+            backdrop-filter: blur(10px);
+        }
+
+        .brightness{
+            /* 对比度 0% ~ 100% 之间 0表示颜色接近灰色， 100% 表示保持原来的对比度 */
+            backdrop-filter: brightness(50%);
+        }
+
+        .contrast{
+            /* 对比度滤镜 */
+            backdrop-filter: contrast(10%);
+        }
+
+        .saturate{
+            /* 设置饱和度 0% ~ 100% 以元素范围的背景位基础计算 */
+            backdrop-filter: saturate(0%);
+            border: 1px solid #333;
+        }
+
+        .hue-rotate{
+            /* 旋转色相 */
+            backdrop-filter: hue-rotate(120deg);
+        }
+
+        .invert{
+            /* 颜色反转 包括色相 明度 */
+            backdrop-filter: invert(100%);
+        }
+
+        .sepia{
+            backdrop-filter: sepia(100%);
+        }
+    </style>
+    <script>
+        let str = `
+            <div class='out'>
+                <div class="inside">backdrop-filter: blur(10px) </div>
+            </div>
+            <style>
+                .out{
+                    width: 1000px;
+                    height: 500px;
+                    background: url(./1.jpeg);
+                }
+                 
+                .box{
+                    display: inline-block;
+                    padding: 30px 50px;
+                    border-radius: 5px;
+                    // 必须要设置背景 而且背景必须是透明的
+                    background: rgba(143, 94, 94, 0);
+                }
+
+                .inside{
+                    // 采用模糊滤镜
+                    backdrop-filter: blur(10px);
+                }
+
+                .brightness{
+                    // 采用明度滤镜
+                    // 控制 元素范围内背景的明度在 0% ~ 100% 之间
+                    // 以视觉上 背景的实际明度位基数计算
+                    backdrop-filter: brightness(50%);
+                }
+                .contrast{
+                    /* 对比度 0% ~ 100% 之间 0表示颜色接近灰色， 100% 表示保持原来的对比度 */ 
+                    backdrop-filter: contrast(10%);
+                }
+
+                .saturate{
+                    /* 设置饱和度 0% ~ 100% 以元素范围的背景位基础计算 */
+                    backdrop-filter: saturate(00%);
+                    border: 1px solid #333;
+                }
+
+                .hue-rotate{
+                    /* 旋转色相 */
+                    backdrop-filter: hue-rotate(120deg);
+                }
+
+                .invert{
+                    /* 颜色反转 包括色相 明度 */
+                    backdrop-filter: invert(100%);
+                }
+
+                .sepia{
+                    backdrop-filter: sepia(100%);
+                }
+            </style>
+        `
+        document.querySelector('.code1').innerText = str
+    </script>
+
+</body>
+</html>

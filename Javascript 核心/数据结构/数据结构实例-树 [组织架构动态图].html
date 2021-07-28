@@ -1,0 +1,328 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据结构 树</title>
+</head>
+<body>
+    <!-- 创建职位的自定义组件 -->
+    <button class="add-post">add post</button>
+    <add-post></add-post>
+    <script type="module">
+        const template = document.createElement('template')
+        template.innerHTML = `
+        <div class='layout'>
+            <!-- 选择序列 -->
+            <div class="layout-series">
+                <select name="series" id="" class='select-series'>
+                    
+                </select>
+            </div>
+            
+            <!-- 选择层级 -->
+            <div class="layout-level">
+                <select name="level" id="" class='select-level'>
+                    
+                </select>
+            </div>
+
+            <!-- 输入职位名称 -->
+            <div class="layout-post-name">
+                <input class='post-name' type="text">
+            </div>
+
+            <!-- 选择父层级职位 -->
+            <div class="layout-parent-post">
+                <select name="post" id="" class='select-post'>
+                    <option value="0">无上级</option>
+                </select>
+            </div>
+            
+            <input type="text" class="del-input">
+            <button class='confirm'>确定</button>
+            <button class='del'>删除</button>
+            
+        </div>
+        <style type="text/css">
+            .layout{
+                width: 100%;
+                height: auto;
+                border: 1px solid red;
+            }
+        </style>
+        `
+        
+
+        customElements.define('add-post', class extends HTMLElement{
+            _fragment_
+            _shadowRoot_ 
+            _layoutSeries_ 
+            _selectSeries_
+            _selectLevel_
+            _layoutLevel_ 
+            _layoutPostName_
+            _postName_
+            _layoutParentPost_
+            _selectPost_
+            _btnConfirm_
+            _btnDel_
+            _inputDel_
+
+            // 数据库的原始数据
+            pLevel;
+            mLevel;  
+            mWeight;
+            pWeight;
+
+            virtualPost = {
+                id: 0,
+                series: null,
+                level: null,
+                name: "虚拟root节点",
+                parent: null,
+                child: []
+            }
+
+            // 职位数组的表示
+            // 数据结构就是属于 - 树
+            // 树对象 可以根据 某些条件 动态生成
+            // 
+            postTree = this.virtualPost
+
+            // 辅助对象时一个冗余的非准确的对象
+            // 不能够用来判断条件
+            // 任何的索引对象都是方便 快速的查找
+            // 是查找的辅助对象
+            // 和添加相关的算法比较的快
+            // 创建索引 实现快速查询
+            // allPostObj = {
+            //     0: this.emptyPost
+            // }
+
+            // 创建索引 实现 职位名称的快速查找
+            // allPostObjByPostName = {}
+            lastPost = this.virtualPost;
+
+            // 表单的值
+            series
+            level
+            weight;
+            postName = "";
+            parentPost = this.virtualPost;
+
+            constructor(){
+                super()
+
+
+                this._fragment_ = template.content.cloneNode(true);
+                this._shadowRoot_ = this.attachShadow({ mode: 'open'});
+                this._layoutSeries_ = this._fragment_.querySelector(".layoutSeries"); 
+                this._selectSeries_ = this._fragment_.querySelector('.select-series');
+                this._selectLevel_ = this._fragment_.querySelector('.select-level')
+                this._layoutLevel_ = this._fragment_.querySelector('.layout-level');
+                this._layoutPostName_ = this._fragment_.querySelector('.layout-post-name');
+                this._postName_ = this._fragment_.querySelector('.post-name');
+                this._layoutParentPost_ = this._fragment_.querySelector('.layout-parent-post');
+                this._selectPost_ = this._fragment_.querySelector('.select-post')
+                this._btnConfirm_ = this._fragment_.querySelector('.confirm')
+                this._btnDel_ = this._fragment_.querySelector('.del')
+                this._inputDel_ = this._fragment_.querySelector('.del-input')
+
+                this._selectSeries_.addEventListener('change', this.eventHandleSelectSeriesChange)
+                this._selectLevel_.addEventListener('change', this.eventHandleSelectLevelChange)
+                this._postName_.addEventListener('change', this.eventHandleChangePostName)
+                this._btnConfirm_.addEventListener('click', this.eventHandleClickBtnConfirm)
+                this._layoutParentPost_.addEventListener('change', this.eventHandleChangeParentPost)
+                this._btnDel_.addEventListener('click', this.delByPostName)
+
+                this._shadowRoot_.appendChild(this._fragment_)
+                
+                // 模拟导入数据库的数据
+                import("./virtual-database.js")
+                .then(({series,pLevel,mLevel,pWeight, mWeight,project,group}) => {
+                    this.pLevel = pLevel;
+                    this.mLevel = mLevel;
+                    this.mWeight = mWeight;
+                    this.pWeight = pWeight;
+                    this._selectPost_.value = 0 
+                  
+                    this.handleUIUpdateSeriesOptions(series);
+                    this.handleUIUpdateSelectLevel(pLevel)
+                })
+             
+            }
+
+            eventHandleSelectSeriesChange = () => {
+                // 序列发生了改变 更新level选择器
+                if(this.series !== this._selectSeries_.value){
+                    this.handleUIUpdateSelectLevel(this[`${this._selectSeries_.value}Level`])
+                } 
+                this.series = this._selectSeries_.value
+            }
+
+            eventHandleSelectLevelChange = () => {
+                this.level = this._selectLevel_.value;
+                this.weight = this[`${this.series}Weight`][this.level];
+            }
+
+            eventHandleChangePostName = () => {
+                this.postName = this._postName_.value;
+            }
+            
+            /**
+             * 选择 父职位层级 change 事件处理器
+            */
+            eventHandleChangeParentPost = () => {
+                const parentPostID = parseInt(this._selectPost_.value)
+                this.parentPost = parentPostID === 0 ? this.virtualPost : this.findPostByID(parentPostID);
+            }
+
+            eventHandleClickBtnConfirm = () => {
+                if(this.postName.length === 0 || this.findPostByName(this.postName) ){
+                    console.error("职位的名称不能为空 同时 不能够有相同的职位名称")
+                    return;
+                }
+                const post = {
+                    id: this.lastPost ? this.lastPost.id + 1 : 1,
+                    series: this.series,
+                    level: this.level,
+                    name: this.postName,
+                    parent: this.parentPost ? this.parentPost : null, 
+                    child: []
+                }
+
+                // 添加 元素 
+                this.add(post)
+
+                // 更新 UI
+                this.handleUIAddOptionToSelectPost(post);
+
+                // 重置
+                this._postName_.value = ""
+            }
+
+            findPostByID = (id) => {
+                return this.findPostProcess(this.postTree, "id",  id)
+            }
+
+            findPostByName = (name) => {
+                return this.findPostProcess(this.postTree, "name",  name)
+            }
+
+            findPostProcess = (post, prop, propValue) => {
+                if(!post){
+                    return null
+                }else if(post[prop] === propValue){
+                    return post
+                }else if(post.child && post.child.length > 0){
+                    let len = post.child.length;
+                    let result;
+                    for(let i = 0; i< len; i++){
+                        let o = this.findPostProcess(post.child[i],prop, propValue)
+                        if(o){
+                            result = o
+                            break;
+                        }
+                    }
+                    return result
+                }
+            }
+
+            // 使用 辅助对象能
+            // 非常快速的实现 查找都对象
+            // 从而快速的实现 查找 增加 修改 操作 这些操作的
+            // 时间复杂时 O(1)
+            add = (post) => {
+                this.parentPost.child.push(post)
+                this.lastPost = post;
+                console.error('还需要修改 canvas')
+            }
+
+            // 删除的操作比较的麻烦
+            // 需要遍历
+            // 所以 时间复杂对时 O(n) 却决于节点的个数
+            delByPostName = () => {
+                const post = this.findPostByName(this._inputDel_.value)
+                // 删除节点的 子节点 一次添加操删除接单的父节点的 child 域中
+                // 从父节点上删除匹配的节点
+                // 把匹配节点的子节点添加的到 父节点的子节点上 
+                if(post){
+                    post.parent.child.splice(post.parent.child.findIndex(_post => _post.id === post.id), 1)
+                    post.parent.child = [...post.parent.child, ...post.child]
+                    this._selectPost_.removeChild(this._selectPost_.querySelector(`#postOption${post.id}`))
+                    this._inputDel_.value = "";
+                    console.log('删除完毕', this.postTree)
+                }else{
+                    console.error('没有找到匹配的项')
+                }
+            }
+
+            handleUIUpdateSeriesOptions = (series) => {
+                for(let key in series) {
+                    const option = document.createElement('option')
+                    option.value = key;
+                    option.innerText = series[key]
+                    this._selectSeries_.appendChild(option)
+                }
+            }
+
+            handleUIUpdateSelectLevel = (level) => {
+                this._selectLevel_.innerHTML = "";
+                for(let key in level){
+                    const option = document.createElement('option')
+                    option.value = key;
+                    option.innerText = level[key]
+                    this._selectLevel_.appendChild(option)
+                }
+            }
+
+            handleUIAddOptionToSelectPost = (post) =>{
+                const option =document.createElement('option');
+                option.id = `postOption${post.id}`;
+                option.value = post.id;
+                option.innerText = post.name;
+                this._selectPost_.appendChild(option);
+            }
+        })
+       
+    </script>
+    
+       
+    <script>
+
+
+        // 目标
+        // 根据公司基础信息
+        // 实现设计公司组织架构的信息
+        // 先要创建职位 然后关联起来
+        // nodeData: {
+        //     id: '',
+        //     name: '',       // 职位名称
+        //     series: "",     // 序列
+        //     parentData: "", // 父层级
+        //     childData: [],  // 子层级
+        // }
+        
+
+        const _addPostBtn_ = document.querySelector('.add-post');
+         
+
+
+
+
+
+
+
+
+        // 模拟数据集库数据
+        // 模拟学校组织架构
+        // 模拟 添加了新的人员情况
+        // 抓取到数据列表中的项
+        // 类似分页抓取，一次只能够抓取一条
+        // 返回的数据 [item]
+        // 实现UI的实时更新
+      
+    </script>
+</body>
+</html>

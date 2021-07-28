@@ -6,10 +6,9 @@
     <title>根据模板创建自定义元素</title>
 </head>
 <body>
-    <template id="template-my-comp">
+    <!-- <template id="template-my-comp">
         <div class='list-item-container'>
             <div class='avatar-container'>
-                <!-- 具名模板 -->
                 <slot name="avatar"></slot>
             </div>
             <div class='label-container'></div>
@@ -44,9 +43,50 @@
                 background: #efefef;
             }
         </style>
-    </template>
+    </template> -->
     <script>
-        const _template = document.querySelector("#template-my-comp")
+        // const _template = document.querySelector("#template-my-comp")
+        const _template_ = document.createElement('template')
+        _template_.innerHTML = `
+            <div class='list-item-container'>
+                <div class='avatar-container'>
+                    <!-- 具名模板 -->
+                    <slot name="avatar"></slot>
+                </div>
+                <div class='label-container'></div>
+            </div>
+
+            <style>
+                .list-item-container{
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    width: 100%;
+                    height: 60px;
+                }
+
+                .avatar-container{
+                    flex-grow: 0;
+                    flex-shrink: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 50px;
+                    height: 50px;
+                    background: #efefef;
+                }
+
+                .label-container{
+                    box-sizing: border-box;
+                    margin-left: 10px;
+                    width: 100%;
+                    line-height: 60px;
+                    height: 100%;
+                    background: #efefef;
+                }
+            </style>
+        `
+
 
         customElements.define(
             "my-comp",
@@ -65,9 +105,9 @@
 
                 constructor(){
                     super()
-                    const __template = _template.cloneNode(true)
+                    const node = _template_.content.cloneNode(true)
                     this.attachShadow({mode: "open"})
-                    this.shadowRoot.appendChild(__template.content);
+                    this.shadowRoot.appendChild(node);
                 }
 
                 attributeChangedCallback(prop, oldValue, newValue){
