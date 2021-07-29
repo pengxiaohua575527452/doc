@@ -8,9 +8,114 @@
 <body>
        
     <script>
-        
+        // 二叉搜索树节点定义
+        class BinarySearchTreeNode {
+            // 数据体 唯一标识
+            value = null;
+            left = null;
+            right = null;
+            constructor(value){
+                value ? this.value = value : "";
+            }
+        }
 
-      
+        // 二叉树
+        class BinarySearchTree {
+            root = null
+            cosntructor(root = null){
+                this.root = root;
+            }
+
+            // 添加节点
+            // 通过 修改指针与对象实现
+            add(node){
+                this.root = this.addProcess(this.root, node)
+            }
+
+            // 需要强化的理解是
+            addProcess(pointerField, node){
+                // 检查是否有重复的值
+                if(pointerField && node.value === pointerField.value){
+                    console.error('有相同的关键值', node.value, pointerField.value)
+                }
+
+                // 指针域 === null
+                if(!pointerField){
+                    pointerField = node;
+                }
+
+                if(node.value < pointerField.value){
+                    
+                    pointerField.left = this.addProcess(pointerField.left, node)
+                }
+                 
+                if(node.value > pointerField.value){
+                    pointerField.right = this.addProcess(pointerField.right, node)
+                }
+
+                return pointerField;
+            }
+
+            callback(node){
+                console.log(node.value)
+            }
+
+            layerTraversal(){
+                this.layerTraversalProcess(this.root)
+            }
+
+            // 二叉树层序遍历的逻辑
+            // 核心
+            //      把需要处理的全部节点作为参数传递进去
+            //      处理全部的节点
+            //      收集全部节点的所有子节点
+            //      把所有的搜集到的子节点 递归的调用
+            // 注意
+            //      函数的所有参数中可能有null 需要过滤一遍
+            //      需要递归的终止条件    
+            layerTraversalProcess(...arg){
+                const _arg = arg.filter(item => item)
+                let arr = []
+                _arg.forEach(item => {
+                    this.callback(item)
+                    arr = [...arr, item.left, item.right]
+                })
+
+                // 递归的终止条件
+                if(arr.every(item => item === null)){
+                    console.error('遍历完毕终结')
+                    return 
+                }else{
+                    this.layerTraversalProcess(...arr)
+                }
+            }
+
+ 
+            remove(){
+
+            }
+
+            findNode(){}
+
+            findMinNode(){
+
+            }
+        }
+
+
+        const binarySearchTree = new BinarySearchTree()
+        // Array.from([8,4,12,2,6,10,14,1,3,5,7,9,11,13,15]).forEach(v => {
+        //     const node = new BinarySearchTreeNode(v)
+        //     binarySearchTree.add(node)
+        // })
+
+        Array.from([8,4,12,2,6,10,14,1,3,5,7,9,13]).forEach(v => {
+            const node = new BinarySearchTreeNode(v)
+            binarySearchTree.add(node)
+        })
+
+        binarySearchTree.layerTraversal()
+
     </script>
 </body>
 </html>
