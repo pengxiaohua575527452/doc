@@ -1,0 +1,42 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <img src="./qrcode.png" alt="">
+  <canvas></canvas>
+  
+  <script src="./dist/main.js"></script>
+  <script>
+
+    const _qrcode_ = document.querySelector('img')
+    const _canvas_ = document.querySelector('canvas')
+
+
+    _qrcode_.addEventListener('load', () => {
+      _canvas_.width = _qrcode_.naturalWidth 
+      _canvas_.height = _qrcode_.naturalHeight;
+      const ctx = _canvas_.getContext('2d')
+
+      ctx.drawImage(
+        _qrcode_,
+        0,0, _qrcode_.width, _qrcode_.height,
+        0,0, _canvas_.width, _canvas_.height
+      )
+
+      
+      const imageData = ctx.getImageData(0,0,_canvas_.width, _canvas_.height);
+      console.log(imageData, _canvas_.width, _canvas_.height)
+      const code = jsQR(imageData.data, _canvas_.width, _canvas_.height)
+      console.log('code: ', code)
+    })
+
+    
+
+    
+  </script>
+  
+</body>
+</html>

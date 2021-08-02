@@ -1,0 +1,19 @@
+{
+  "name": "learn-qrcode",
+  "version": "1.0.0",
+  "description": "学习 解析 二维码",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "@rollup/plugin-typescript": "^8.2.5"
+  },
+  "dependencies": {
+    "jsqr": "^1.4.0",
+    "tc-qrcode": "^1.1.0"
+  }
+}
