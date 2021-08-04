@@ -5,7 +5,7 @@
   <title>Document</title>
 </head>
 <body>
-  <img src="./qrcode.png" alt="">
+  <img class='qrcode' src="./qrcode.png" alt="">
   <canvas></canvas>
   
   <script src="./dist/main.js"></script>
@@ -14,24 +14,42 @@
     const _qrcode_ = document.querySelector('img')
     const _canvas_ = document.querySelector('canvas')
 
+    console.log('_qrcode_: ', _qrcode_)
 
-    _qrcode_.addEventListener('load', () => {
+    if(_qrcode_){
       _canvas_.width = _qrcode_.naturalWidth 
-      _canvas_.height = _qrcode_.naturalHeight;
-      const ctx = _canvas_.getContext('2d')
+        _canvas_.height = _qrcode_.naturalHeight;
+        const ctx = _canvas_.getContext('2d')
 
-      ctx.drawImage(
-        _qrcode_,
-        0,0, _qrcode_.width, _qrcode_.height,
-        0,0, _canvas_.width, _canvas_.height
-      )
+        ctx.drawImage(
+          _qrcode_,
+          0,0, _qrcode_.width, _qrcode_.height,
+          0,0, _canvas_.width, _canvas_.height
+        )
+        console.log('--window: ', window)
+        
+        const imageData = ctx.getImageData(0,0,_canvas_.width, _canvas_.height);
+        const code = jsQR(imageData.data, _canvas_.width, _canvas_.height)
+        console.log('--code: ', code)
+    }else{
+      _qrcode_.addEventListener('load', () => {
+        _canvas_.width = _qrcode_.naturalWidth 
+        _canvas_.height = _qrcode_.naturalHeight;
+        const ctx = _canvas_.getContext('2d')
+        ctx.drawImage(
+          _qrcode_,
+          0,0, _qrcode_.width, _qrcode_.height,
+          0,0, _canvas_.width, _canvas_.height
+        )
+        console.log('window: ', window)
+        const imageData = ctx.getImageData(0,0,_canvas_.width, _canvas_.height);
+        const code = jsQR(imageData.data, _canvas_.width, _canvas_.height)
+        console.log('code: ', code)
+      })
+    }
 
-      
-      const imageData = ctx.getImageData(0,0,_canvas_.width, _canvas_.height);
-      console.log(imageData, _canvas_.width, _canvas_.height)
-      const code = jsQR(imageData.data, _canvas_.width, _canvas_.height)
-      console.log('code: ', code)
-    })
+
+    
 
     
 

@@ -1,0 +1,244 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVL</title>
+</head>
+<body>
+    <ul>
+        <li>AVL 树</li>
+        <li>二叉搜索平衡树</li>
+        <li>
+            <ul>
+                <li>1: 可能是一个空树</li>
+                <li>2: 左右两个子树的高度差的绝对值不超过1, 且 左右两个子树页是平衡树</li>
+            </ul>
+        </li>
+    </ul>
+    <script>
+        // 教程位置
+        // https://zhuanlan.zhihu.com/p/56066942  原理演示的非常清除
+        // https://blog.csdn.net/rth362147773/article/details/78014586 js代码实现
+        // AVL 树在每次插入的时候都需要检查 节点是否是平衡
+        class AVLTreeNode{
+            value;
+            left;
+            right
+
+            constructor(value = null, left = null, right = null){
+                this.value = value;
+                this.left = left;
+                this.right = right;
+            }
+        }
+
+        class AVLTree{
+            root 
+            constructor(root = null){
+                this.root = root;
+            }
+
+            LL_rotate(node){
+                const temp = node.left
+                node.left = temp.right
+                temp.right = node
+                console.log('temp: ', temp)
+                return temp
+            }
+
+            RR_rotate(node){
+                console.log('RR_rotate: ', node)
+                const temp = node.right
+                node.right = temp.left;
+                temp.left = node;
+                return temp;
+            }
+
+            LR_rotate(node){
+                node.left = this.RR_rotate(node.left)
+                return this.LL_rotate(node)
+            }
+
+            RL_rotate(node){
+                node.right = this.LL_rotate(node.right)
+                return this.RR_rotate(node)
+            }
+
+            insert(value){
+                this.root = this.insertProcess(value, this.root)
+                drawVALTree(this.root)
+            }
+            insertProcess(value, parentNode){
+                if(!parentNode){
+                    return new AVLTreeNode(value)
+                }
+                if(value < parentNode.value){ // 向左侧子节点插入
+                    parentNode.left = this.insertProcess(value, parentNode.left)
+                    // 插入完成后检查所有后代节点发生过修改的节点
+                    // 也就是 所有经历过的节点都需要检查是否失去平衡
+                    // 检查高度
+                    // 超高子节点是 不平衡节点的左侧子节点 [L]
+                    if(this.getHeight(parentNode.left ) - this.getHeight(parentNode.right) > 1){ // L
+                        // value < left.value 表示插入的是 超高子节点的左侧 [L]
+                        if(value < parentNode.left.value){ 
+                            // console.log('需要做平衡 --- LL', parentNode)
+                            parentNode = this.LL_rotate(parentNode)
+                            // console.log('平衡做完以后： ', parentNode)
+                        }else{ // [R]
+                            // console.log('需要做平衡 --- LR', parentNode)
+                            parentNode = this.LR_rotate(parentNode)
+                        }
+                    }
+                }else if(value > parentNode.value){ // 向右侧子节点插入
+                    parentNode.right = this.insertProcess(value, parentNode.right)
+                    if(this.getHeight(parentNode.right) - this.getHeight(parentNode.left) > 1){ // R
+                        // console.log('需要做平衡 --- ')
+                        if(value > parentNode.right.value){ // R
+                            parentNode = this.RR_rotate(parentNode)
+                        }else{ // L
+                            parentNode = this.RL_rotate(parentNode);
+                        }
+                    } 
+                }
+                return parentNode
+            }
+
+            getHeight(node){
+                if(!node){
+                    return -1
+                }else{
+                    return Math.max(this.getHeight(node.left), this.getHeight(node.right)) + 1;
+                }
+            }
+
+            /**
+             * 删除指定的节点
+            */
+            remove(v){
+                
+            }
+            
+        }
+
+        function drawVALTree(node){
+            // 遍历把 VALTree 转化成为
+            const allNode = []
+            function layoutTraverse(index, ...node){
+                allNode[index] = [...node]
+                let a = []
+                node.forEach(item => {
+                    a = [
+                        ...a,
+                        item ? item.left : null, 
+                        item ? item.right : null,
+                    ]
+                })
+
+                if(a.some(item => item)){
+                    layoutTraverse(++index, ...a)
+                }
+            }
+            layoutTraverse(0, node)
+            
+            const _canvas_ = document.createElement('canvas')
+            _canvas_.width = 1000;
+            _canvas_.height = 500
+            _canvas_.style.width = "1000px";
+            _canvas_.style.height= "500px";
+
+            const ctx = _canvas_.getContext('2d');
+            ctx.textAlign = 'center'
+            ctx.font = "bold 22px serif"
+            ctx.textBaseline  = "middle"
+           
+
+            const cellSize = 30
+            const rowHeight = 100
+           
+            allNode.forEach((nodes, rowIndex, allNode) => {
+                console.log('rowIndex: ', rowIndex)
+                const len = nodes.length;
+                const cellCount = 1000 / len;
+                const positionY = rowIndex * rowHeight + rowHeight * 0.5
+                
+                nodes.forEach((node, colIndex, nodes) => {
+                    // 当前元素的数量 == nodes.length
+                    
+                    if(!node)return 
+
+                    const positionX = colIndex * cellCount + cellCount * 0.5
+                
+                    // 绘制指向左子元素的线条
+                    const space = cellCount / 4
+                    if(node.left){
+                        const targetX = positionX - space;
+                        const targetY = positionY + rowHeight;
+                        ctx.beginPath();
+                        ctx.moveTo(positionX, positionY);
+                        ctx.lineTo(targetX, targetY);
+                        ctx.stroke();
+                    }
+
+                    if(node.right){
+                        const targetX = positionX + space;
+                        const targetY = positionY + rowHeight;
+                        ctx.beginPath()
+                        ctx.moveTo(positionX, positionY)
+                        ctx.lineTo(targetX, targetY)
+                        ctx.stroke()
+                    }
+                     
+                    ctx.beginPath()
+                    ctx.ellipse(
+                        positionX, 
+                        positionY, 
+                        30, 
+                        30, 
+                        0, 
+                        0, 
+                        2 * Math.PI, 
+                        false
+                    );
+                    ctx.stroke()
+                    ctx.fillStyle = "#fff"
+                    ctx.fill()
+
+                    ctx.fillStyle = "#333"
+                    ctx.fillText(node ? node.value : null, positionX, positionY, cellCount)
+                })
+            })
+
+            document.body.appendChild(_canvas_)
+        }
+
+        const avlTree = new AVLTree()
+
+        // Array.from([11,7,15,5,9,13,20,3,6,8,10,14,18,25]).forEach(v => {
+        //     avlTree.insert(v)
+        // })
+
+        // Array.from([5,3,6,4,2,1]).forEach(v => {
+        //     avlTree.insert(v)
+        // })
+
+        // Array.from([2,1,5,4,6,7]).forEach(v => {
+        //     avlTree.insert(v)
+        // })
+
+        // Array.from([5,2,6,1,4,3]).forEach(v => {
+        //     avlTree.insert(v)
+        // })
+
+        // Array.from([5,1,8,6,9,7]).forEach(v => {
+        //     avlTree.insert(v)
+        // })
+
+
+        // console.log(avlTree)
+        // drawVALTree(avlTree.root)
+
+
+    </script>
+</body>
+</html>

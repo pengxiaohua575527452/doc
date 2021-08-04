@@ -9,6 +9,8 @@
        
     <script>
         // 二叉搜索树节点定义
+        // 二叉树 最多只有2个子节点的树
+        // 搜索树 左侧子节点的值 < 节点的值 < 右侧子节点的值
         class BinarySearchTreeNode {
             // 数据体 唯一标识
             value = null;
@@ -57,11 +59,11 @@
             }
 
             callback(node){
-                console.log(node.value)
+                console.log(node && node.value)
             }
 
-            layerTraversal(){
-                this.layerTraversalProcess(this.root)
+            layerTraverse(){
+                this.layerTraverseProcess(this.root)
             }
 
             // 二叉树层序遍历的逻辑
@@ -73,12 +75,14 @@
             // 注意
             //      函数的所有参数中可能有null 需要过滤一遍
             //      需要递归的终止条件    
-            layerTraversalProcess(...arg){
-                const _arg = arg.filter(item => item)
+            layerTraverseProcess(...arg){
+                // const _arg = arg.filter(item => item)
+                const _arg = Array.from(arg)
+                console.log('_arg: ', _arg)
                 let arr = []
                 _arg.forEach(item => {
                     this.callback(item)
-                    arr = [...arr, item.left, item.right]
+                    arr = [...arr, item && item.left, item && item.right]
                 })
 
                 // 递归的终止条件
@@ -86,19 +90,116 @@
                     console.error('遍历完毕终结')
                     return 
                 }else{
-                    this.layerTraversalProcess(...arr)
+                    this.layerTraverseProcess(...arr)
                 }
             }
 
- 
-            remove(){
-
+            // 二叉树的 中序遍历
+            // L#R 先处理根节点 -> 处理左节点 -> 在处理右节点
+            inOrderTraverse(){
+                this.inOrderTraverseProcess(this.root)
             }
 
-            findNode(){}
+            inOrderTraverseProcess(node){
+                if(!node) return;
+                node.left && this.inOrderTraverseProcess(node.left)
+                console.log('node', node.value)
+                node.right && this.inOrderTraverseProcess(node.right)
+            }
 
-            findMinNode(){
+            // 二叉树的 先序遍历  #LR
+            preOrderTraverse(){
+                this.preOrderTraverseProcess(this.root)
+            }
+            preOrderTraverseProcess(node){
+                if(!node) return;
+                console.log(node.value)
+                node.left && this.preOrderTraverseProcess(node.left)
+                node.right && this.preOrderTraverseProcess(node.right);
+            }
 
+            // 二叉树的 后序遍历 LR#
+            postOrderTranverse(){
+                this.postOrderTraverseProcess(this.root)
+            }
+            postOrderTraverseProcess(node){
+                if(!node) return
+                node.left && this.postOrderTraverseProcess(node.left)
+                node.right && this.postOrderTraverseProcess(node.right)
+                console.log('node: ', node.value)
+            }
+
+            // 搜索 二叉树中的最小的值
+            getMin(){
+                return this.getMinProcess(this.root)
+            }
+            getMinProcess(node){
+                if(node.left){
+                    return this.getMinProcess(node.left)
+                }else{
+                    return node;
+                }
+            }
+
+            // 搜索二叉树中的最大值的节点
+            getMax(){
+                return this.getMaxProcess(this.root)
+            }
+            getMaxProcess(node){
+                return node.right ? this.getMaxProcess(node.right) : node;
+            }
+
+  
+            // 搜索二叉树中的指定的值的节点
+            getNodeByValue(v){
+                return this.getNodeByValueProcess(v, this.root)
+            }
+            // 采用 #LR 先序遍历
+            getNodeByValueProcess(v, node){
+                console.log('node.value: ', node.value, '  v: ', v)
+                if(node && node.value === v){
+                    return node
+                }
+                return (node.left && this.getNodeByValueProcess(v, node.left)) || (node.right &&  this.getNodeByValueProcess(v, node.right))
+            }
+            
+            // 删除
+            // 删除的核心就是把某个 指针域 指向 null 这样就实现了删除
+            // 例如
+            // 如果当前节点 就是需要删除的节点    
+            // 就是需要把当前节点的指针域指向null 
+            // node.left = removNode(node.left) 
+            // node.left 是一个指针域 
+            // removeNode(node.left) 通过返回的结果修改指针域       
+            remove(v){
+                this.root = this.removeProcess(v, this.root)
+            }
+            removeProcess(v, node){
+                if(!node) {
+                    return null;
+                }
+
+                if(v < node.value){
+                    node.left = this.removeProcess(v, node.left)
+                    return node
+                }else if( v > node.value){
+                    node.right = this.removeProcess(v, node.right)
+                    return node
+                }else if(v === node.value){
+                    if(!node.left && !node.right){
+                        return null;
+                    }else if(!node.left && node.right){
+                        return node.right
+                    }else if(node.left && !node.right){
+                        return node.left
+                    }else if(node.left && node.right){
+                        // 造出右侧节点的最小值的节点
+                        let _node = this.getMinProcess(node.right)
+                        node.value = _node.value;
+                        node.right = this.removeProcess(node.value,node.right)
+                        return node;
+                    }
+                }
             }
         }
 
@@ -109,12 +210,40 @@
         //     binarySearchTree.add(node)
         // })
 
-        Array.from([8,4,12,2,6,10,14,1,3,5,7,9,13]).forEach(v => {
+        Array.from([11,7,15,5,9,13,20,3,6,8,10,12,14,18,25]).forEach(v => {
             const node = new BinarySearchTreeNode(v)
             binarySearchTree.add(node)
         })
 
-        binarySearchTree.layerTraversal()
+        // binarySearchTree.add(new BinarySearchTreeNode(11))
+
+        // binarySearchTree.layerTraverse();
+
+        // console.log('inOrderTraversal()----------------------')
+        // binarySearchTree.inOrderTraverse();
+
+        // console.log('preOrderTraverse()------------')
+        // binarySearchTree.preOrderTraverse();
+
+        // console.log('postOrderTraverse() - --------------')
+        // binarySearchTree.postOrderTranverse()
+
+        // console.log('getMin()----------')
+        // let min = binarySearchTree.getMin()
+        // console.log("min: ", min)
+
+        // console.log('getMax()-----------------')
+        // let max = binarySearchTree.getMax()
+        // console.log('max: ', max)
+
+        // console.log('getNodeByValue() ========')
+        // let node = binarySearchTree.getNodeByValue(250)
+        // console.log('node: ', node)
+
+        // binarySearchTree.remove(15)
+        // binarySearchTree.layerTraverse();
+
+
 
     </script>
 </body>

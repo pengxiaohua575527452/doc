@@ -1,0 +1,201 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVL</title>
+</head>
+<body>
+    <ul>
+        <li>AVL 树</li>
+        <li>二叉搜索平衡树</li>
+        <li>
+            <ul>
+                <li>1: 可能是一个空树</li>
+                <li>2: 左右两个子树的高度差的绝对值不超过1, 且 左右两个子树页是平衡树</li>
+            </ul>
+        </li>
+    </ul>
+    <script>
+        // 教程位置
+        // https://zhuanlan.zhihu.com/p/56066942  原理演示的非常清除
+        // https://blog.csdn.net/rth362147773/article/details/78014586 js代码实现
+        let AVLTree = (function() {
+            class Node {
+                constructor(key) {
+                    this.key = key;
+                    this.left = null;
+                    this.right = null;
+                }
+            }
+
+            class AVLTree {
+                constructor() {
+                    this.root = null;
+                    this.parentNode;
+                    this.nodeToBeDeleted;
+                }
+
+                getRoot() {
+                    return this.root;
+                };
+
+                heightNode(node) {
+                    if(node === null) {
+                        return -1;
+                    } else {
+                        return Math.max(this.heightNode(node.left), this.heightNode(node.right)) + 1;
+                    }
+                };
+                // 
+                // [当前节点] 的左子树的高度 > [当前节点] 的右子树的高度
+                // 设置 [当前节点] 的左子树的节点为 [临时节点]
+                // 设置 当前节点的左子树为临时节点的右子树节点
+                // 设置 临时节点的的右子树是当前节点
+                // 返回 临时节点
+                rotationLL(node) {
+                    var tmp = node.left;
+                    node.left = tmp.right;
+                    tmp.right = node;
+
+                    return tmp;
+                };
+
+                rotationRR(node) {
+                    var tmp = node.right;
+                    node.right = tmp.left;
+                    tmp.left = node;
+
+                    return tmp;
+                };
+
+                rotationLR(node) {
+                    node.left = this.rotationRR(node.left);
+                    return this.rotationLL(node);
+                };
+
+                rotationRL(node) {
+                    node.right = this.rotationLL(node.right);
+                    return this.rotationRR(node);
+                };
+
+                insertNode(node, element) {
+
+                    if(node === null) {
+                        node = new Node(element);
+
+                    } else if(element < node.key) {
+
+                        node.left = this.insertNode(node.left, element);
+
+                        if(node.left !== null) {
+
+                            if((this.heightNode(node.left) - this.heightNode(node.right)) > 1) {
+                                if(element < node.left.key) {
+                                    node = this.rotationLL(node);
+                                } else {
+                                    node = this.rotationLR(node);
+                                }
+                            }
+                        }
+                    } else if(element > node.key) {
+
+                        node.right = this.insertNode(node.right, element);
+
+                        if(node.right !== null) {
+
+                            if((this.heightNode(node.right) - this.heightNode(node.left)) > 1) {
+
+                                if(element > node.right.key) {
+                                    node = this.rotationRR(node);
+                                } else {
+                                    node = this.rotationRL(node);
+                                }
+                            }
+                        }
+                    }
+
+                    return node;
+                };
+
+                insert(element) {
+                    this.root = this.insertNode(this.root, element);
+                };
+
+
+                removeNode(node, element) {
+                    if(node === null) {
+                        return null;
+                    }
+                    this.parentNode = node;
+
+                    if(element < node.key) {
+                        node.left = removeNode(node.left, element);
+                    } else {
+                        nodeToBeDeleted = node;
+                        node.right = removeNode(node.right, element);
+                    }
+
+                    if(node === this.parentNode) { 
+                        if(nodeToBeDeleted !== null && element === nodeToBeDeleted.key) {
+                            if(nodeToBeDeleted === this.parentNode) {
+                                node = node.left;
+                            } else {
+                                var tmp = nodeToBeDeleted.key;
+                                nodeToBeDeleted.key = parentNode.key;
+                                parentNode.key = tmp;
+                                node = node.right;
+                            }
+                        }
+                    } else { 
+
+                        if(node.left === undefined) node.left = null;
+                        if(node.right === undefined) node.right = null;
+
+                        if((this.heightNode(node.left) - this.heightNode(node.right)) === 2) {
+                            if(element < node.left.key) {
+                                node = this.rotationLR(node);
+                            } else {
+                                node = this.rotationLL(node);
+                            }
+                        }
+
+                        if((this.heightNode(node.right) - this.heightNode(node.left)) === 2) {
+                            if(element > node.right.key) {
+                                node = this.rotationRL(node);
+                            } else {
+                                node = this.rotationRR(node);
+                            }
+                        }
+                    }
+
+                    return node;
+                };
+
+                remove(element) {
+                    parentNode = null;
+                    nodeToBeDeleted = null;
+                    root = this.removeNode(root, element);
+                };
+            }
+            return AVLTree;
+        })()
+
+        console.log(AVLTree)
+
+        const tree = new AVLTree()
+        tree.insert(10)
+        tree.insert(7)
+        tree.insert(11)
+        tree.insert(8)
+        tree.insert(3)
+        tree.insert(2)
+
+
+        console.log('tree: ', tree)
+ 
+
+
+    </script>
+</body>
+</html>
