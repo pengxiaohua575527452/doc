@@ -17,6 +17,22 @@
         </li>
     </ul>
     <script>
+
+        
+
+        const _div_ = document.createElement('div')
+        _div_.style.background = "red"
+        _div_.style.color = "#fff"
+
+        function appendSplit(message, background = null){
+            const _div1_ = _div_.cloneNode(false)
+            _div1_.innerText = message 
+            _div1_.style.background = background ||  _div_.style.background;
+            document.body.appendChild(_div1_)
+        }
+
+        
+
         // 教程位置
         // https://zhuanlan.zhihu.com/p/56066942  原理演示的非常清除
         // https://blog.csdn.net/rth362147773/article/details/78014586 js代码实现
@@ -40,29 +56,58 @@
             }
 
             LL_rotate(node){
+                
+                appendSplit('需要LL_roate 的节点： ', "#555")
+                drawVALTree(node)
+                
                 const temp = node.left
                 node.left = temp.right
                 temp.right = node
-                console.log('temp: ', temp)
+
+                appendSplit(' LL_roate 之后的节点： ', "#555")
+                drawVALTree(temp)
                 return temp
             }
 
             RR_rotate(node){
-                console.log('RR_rotate: ', node)
+                
+                appendSplit('需要RR_roate 的节点： ', "#555")
+                drawVALTree(node)
+
                 const temp = node.right
                 node.right = temp.left;
                 temp.left = node;
+
+                appendSplit(' RR_roate 之后的节点： ', "#555")
+                drawVALTree(temp)
                 return temp;
             }
 
             LR_rotate(node){
+                appendSplit('需要LR_roate 的节点： ', "#555")
+                drawVALTree(node)
+
                 node.left = this.RR_rotate(node.left)
-                return this.LL_rotate(node)
+                node =  this.LL_rotate(node)
+
+                appendSplit(' LR_roate 之后的节点： ', "#555")
+                drawVALTree(node)
+
+                return node
             }
 
             RL_rotate(node){
+                
+                appendSplit('需要RL_roate 的节点： ', "#555")
+                drawVALTree(node)
+
                 node.right = this.LL_rotate(node.right)
-                return this.RR_rotate(node)
+                node = this.RR_rotate(node)
+                
+
+                appendSplit(' RL_roate 之后的节点： ', "#555")
+                drawVALTree(node)
+                return node
             }
 
             insert(value){
@@ -81,7 +126,7 @@
                     // 超高子节点是 不平衡节点的左侧子节点 [L]
                     if(this.getHeight(parentNode.left ) - this.getHeight(parentNode.right) > 1){ // L
                         // value < left.value 表示插入的是 超高子节点的左侧 [L]
-                        if(value < parentNode.left.value){ 
+                        if(value < parentNode.left.value){ // L
                             // console.log('需要做平衡 --- LL', parentNode)
                             parentNode = this.LL_rotate(parentNode)
                             // console.log('平衡做完以后： ', parentNode)
@@ -114,10 +159,74 @@
 
             /**
              * 删除指定的节点
+             * 每次删除了这个节点 必须开始从这个节点向上检查 是否平衡
             */
             remove(v){
-                
+                appendSplit('开始删除： '+ v, "blue")
+                this.root = this.removeProcess(v, this.root)
+            
             }
+            removeProcess(v, node){
+                if(!node) return null;
+
+                if(v < node.value){
+                    node.left = this.removeProcess(v, node.left)
+                }else if(v > node.value){
+                    node.right = this.removeProcess(v, node.right)
+                }else if(v === node.value){
+                    if(!node.left && !node.right){
+                        console.log('直接返回了 node = null')
+                        node = null
+                    }else if(!node.left && node.right){
+                        node = node.right
+                    }else if(node.left && !node.right){
+                        node = node.left
+                    }else{
+                        // 查找到右边最小的值节点 作为临时节点
+                        const temp = this.findMinNode(node.right)
+                        node.value = temp.value;
+                        // 删除 右边最小值的节点
+                        node.right = this.removeProcess(temp.value, node.right)
+                    }
+                }
+
+                // 删除的节点开始 从下到上 每一个节点都需要检查
+                if(node){
+                    const leftHeight = this.getHeight(node.left)
+                    const rightHeight = this.getHeight(node.right)
+                    if(leftHeight - rightHeight > 1){ // L
+                        let ultrahighNode = node.left
+                        if(this.getHeight(ultrahighNode.left) - this.getHeight(ultrahighNode.right) >= 0){ // L
+                            node = this.LL_rotate(node)
+                        }else{// R
+                            node = this.LR_rotate(node)
+                        }
+
+                    }else if(rightHeight - leftHeight > 1){ // R
+                        let ultrahighNode = node.right;
+                        if(this.getHeight(ultrahighNode.left) - this.getHeight(ultrahighNode.right) > 0){ // L
+                            node = this.RL_rotate(node)
+                        }else{// R
+                            node = this.RR_rotate(node)
+                        }
+                    }
+                }
+
+                return node
+            }
+
+            findMinNode(node){
+                let minNode
+                if(node.left){
+                    minNode = this.findMinNode(node.left)
+                }else{
+                    minNode = node
+                }
+
+                return minNode
+            }
+
+            
             
         }
 
@@ -157,7 +266,6 @@
             const rowHeight = 100
            
             allNode.forEach((nodes, rowIndex, allNode) => {
-                console.log('rowIndex: ', rowIndex)
                 const len = nodes.length;
                 const cellCount = 1000 / len;
                 const positionY = rowIndex * rowHeight + rowHeight * 0.5
@@ -214,10 +322,52 @@
 
         const avlTree = new AVLTree()
 
-        // Array.from([11,7,15,5,9,13,20,3,6,8,10,14,18,25]).forEach(v => {
-        //     avlTree.insert(v)
-        // })
+        Array.from([11,7,15,5,9,13,20,3,6,8,10,14,18,25]).forEach(v => {
+            avlTree.insert(v)
+        })
+        appendSplit("完成了初始化树操作----")
+        
+        avlTree.remove(10)
+        drawVALTree(avlTree.root)
+        appendSplit("完成了 - 删除 10")
+        
+        
+        avlTree.remove(8)
+        drawVALTree(avlTree.root)
+        appendSplit("完成了 - 删除 8")
 
+        let delValue = 9
+        avlTree.remove(delValue)
+        drawVALTree(avlTree.root)
+        appendSplit("完成了 - 删除 " + delValue )
+
+        delValue = 3
+        avlTree.remove(delValue)
+        drawVALTree(avlTree.root)
+        appendSplit("完成了 - 删除 " + delValue)
+
+        delValue = 15
+        avlTree.remove(delValue)
+        drawVALTree(avlTree.root)
+        appendSplit("完成了 - 删除 " + delValue)
+
+        delValue = 20
+        avlTree.remove(delValue)
+        drawVALTree(avlTree.root)
+        appendSplit("完成了 - 删除 " + delValue)
+
+        delValue = 25
+        avlTree.remove(delValue)
+        drawVALTree(avlTree.root)
+        appendSplit("完成了 - 删除 " + delValue)
+
+        
+         
+
+       
+
+        
+        // 测试 数据
         // Array.from([5,3,6,4,2,1]).forEach(v => {
         //     avlTree.insert(v)
         // })

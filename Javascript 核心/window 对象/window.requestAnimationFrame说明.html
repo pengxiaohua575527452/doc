@@ -1,0 +1,46 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class='div'>requestAnimationFrame</div>
+    <div class='div2'>transition</div>
+    <style type="text/css">
+        .div{
+            width: 100px;
+            height: 100px;
+            background: #eee;
+            transform: translateX(0px);
+        }
+    </style>
+    <script>
+        console.log(performance.now())
+        const _div_ = document.querySelector('.div')
+
+        let positionX = 0;
+        let count = 0
+
+        // domHighResTimestamp 传递一个高分辨路时间戳 参数给回调函数
+        // 一个以性能测量开始的 微秒级 时间戳
+        function frame(domHighResTimeStamp){
+            // console.log('执行的时间： ', domHighResTimeStamp)
+            positionX++
+            count++;
+            _div_.style.transform =`translateX(${positionX}px)`
+            if(positionX < 100){
+                window.requestAnimationFrame(frame)
+            }else{
+                console.log(performance.now())
+                // console.log('一共执行的次数： ', count)
+            }
+        }
+        console.log(performance.now())
+        window.requestAnimationFrame(frame)
+
+    </script>
+</body>
+</html>
+ 

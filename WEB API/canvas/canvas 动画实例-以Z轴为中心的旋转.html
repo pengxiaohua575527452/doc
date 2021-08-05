@@ -1,0 +1,53 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>canvas 动画</title>
+</head>
+<body>
+    <canvas width = 300 height = 300>
+
+    </canvas>
+    <style>
+        canvas{
+            border: 1px solid red;
+        }
+    </style>
+    <script>
+        const _canvas_ = document.querySelector('canvas')
+        const ctx = _canvas_.getContext('2d');
+
+        function drawProcess(x, y){
+            ctx.clearRect(0,0,300,300)
+            ctx.beginPath()
+            ctx.ellipse(x, y, 10, 10, 0, 0, Math.PI * 2, false)
+            ctx.fill()
+        }
+
+        const r = 100
+        const baseRadian = Math.PI / 180;
+        function draw(v){
+            let x = 150 + Math.cos(baseRadian * v) * r
+            let y = 150 + Math.sin(baseRadian * v) * r
+            drawProcess(x, y)
+        }
+
+        let currentRadia = 100
+        function animation(){
+            draw(currentRadia)
+            if(currentRadia >= 360){
+                currentRadia = 0
+            }
+            currentRadia++
+            window.requestAnimationFrame(animation)
+        }
+
+        window.requestAnimationFrame(animation)
+        
+
+        console.log(Math.sin(Math.PI))
+        console.log(Math.sin(Math.PI* 1.5))
+    </script>
+</body>
+</html>
