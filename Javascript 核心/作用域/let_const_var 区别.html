@@ -1,0 +1,94 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<pre>
+var 
+没有块级作用域的概念 
+会触发变量提升
+会绑定在当前作用域范围
+
+
+
+let const
+有块级作用域的概念
+不会触发变量提升
+会绑定在当前作用域范围
+不允许重复声明
+
+const 
+是变量不能够重新赋值
+
+
+
+
+</pre> 
+    <script type="text/javascript">
+// let const  var 区别
+
+
+// console.log(a) 
+// 输出undefined 变量 a 的声明被提升了
+// {   
+//     var a = "aa"
+//     var a = "aaa" // 可以重复声明
+// }
+// console.log(a) // 输出 'aaa'
+
+// 没有块级作用域的概念，上面的代码等同于
+// console.log(a) // 输出undefined 变量 a 的声明被提升了
+// var a = "aa"
+// var a = "aaa" // 可以重复声明
+// console.log(a) // 输出 'aaa'
+
+
+ 
+{   
+    // 报错 不能够再初始化之前访问
+    // Uncaught ReferenceError: Cannot access 'b' before initialization
+    // 变量b已经绑定再这个作用域范围内，但是还没有初始化，
+    console.log(b)
+    let b = 'bb'
+    console.log(b) // 输出 bb
+}
+
+// 报错 有块级作用域的概念 外部作用域无法访问内部作用域的数据
+// 当前作用域范围内没有绑定这个 b 变量
+// Uncaught ReferenceError: b is not defined
+console.log(b)
+
+
+
+{
+    // console.log(c)
+    // 报错 不能够在初始化之前访问
+    // index.html:62 Uncaught ReferenceError: Cannot access 'c' before initialization
+    const c = "cc"
+
+    // c = "c"
+    // 报错 常量不能够重新赋值
+
+    const d = {} // d 保存的是一个内存指针
+
+    d.name = 'dname'  // 只要不是更改内存指针，可以随意修改内存中保存的数据
+    console.log(d) // 输出 { name: "dname"}
+}
+// 报错
+// 当前作用域范围内没有c变量
+console.log(c)
+
+        
+
+        
+
+ 
+
+
+        
+    </script>
+</body>
+</html>

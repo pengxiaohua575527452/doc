@@ -1,0 +1,77 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        /**
+         * 赋值运算符 右侧的表达式声明的变量不会 被添加到当前作用域
+         * 而是当前 作用域的子作用域 
+         *
+        */
+      
+        let b = 'b'
+        let c = class d{
+            fn(){
+                console.log('class b: ', b) // 输出 ‘b’
+                
+            }
+        }
+        
+        let _c = new c();
+        _c.fn();
+        try{
+            console.log(d) //报错 没有声明这个变量
+        }catch(err){
+            console.error('err: ', err)
+        }
+
+
+        /**
+         * 赋值运算符 右侧的函数声明语句中 函数名是一个常量
+         * 在严格模式是中 对常量进行赋值会报错
+        */
+        let a = "a"
+        let r = function a(){
+            // 严格模式下 a = 100 会报错
+            // a 是一个常量
+            "use strict"
+            a = 100;
+            console.log('inside: ', a) //  输出 函数a
+        }
+        try{
+            r()
+        }catch(err){
+            console.error(err)
+        }
+        console.log('a: ', a) // 输出 'a'
+
+        /**
+         * 赋值运算符 右侧的类声明语句中 类的标识符是一个常量
+         * 类默认使用严格模式，修改标识符的值会报错
+        */
+
+        let AA = class AA{
+            fn(){
+                AA = "100"
+            }
+        }
+        let aa = new AA()
+        try{
+            aa.fn()
+        }catch(err){
+            console.error(err)
+        }
+
+
+         
+    </script>
+    <script>
+
+    </script>
+</body>
+</html>

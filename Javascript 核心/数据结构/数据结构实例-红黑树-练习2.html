@@ -1,0 +1,676 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        <li>
+            红黑树 算法动画演示地址
+        </li>
+        <li>https://www.cs.usfca.edu/~galles/visualization/RedBlack.html</li>
+        <li>红黑树教程</li>
+        <li>https://www.bilibili.com/video/BV1d64y1z7Uk?p=9&spm_id_from=pageDriver</li>
+        <li>https://cloud.tencent.com/developer/article/1688394</li>
+        <li>https://www.bilibili.com/video/BV135411h7wJ?p=14</li>
+    </ul>
+    <ul>
+        <li>
+            <h3>红黑树的性值</h3>
+        </li>
+        <li>根节点必须是黑色</li>
+        <li>每个节点只能是红色或者是黑色</li>
+        <li>红色的节点必须接两个黑色的子节点[终端节点是红色我们认为指向的两个 null 的黑色子节点]</li>
+        <li>每个叶子节点都是黑色的[这里的叶子节点值得是 null 节点]</li>
+        <li>任意节点向下到任意叶子节点之间的路径中的黑色节点的数目向等[bh相等]</li>
+    </ul>
+
+    <div class='container'></div>
+
+    <script defer>
+        // 红黑树的特性
+        /**
+         * 红黑树的特性
+         * 1: 节点不是红色就是黑色
+         * 2： 根节点必须是红色的
+         * 3： 红色的节点的子节点只能够是黑色的
+         * 4： 全部的叶子节点都是黑色的
+         * 5： 任意节点向下到全部的叶子节点的黑高[和节点的数量]相同
+         * 
+        */
+
+        /**
+         * 红黑树和 2-3-4 树的对应关系 [主要指的是节点的对应关系]
+         * 2-3-4树                                                                              红黑树
+         * ----------------------------------------------------------------------------------------------------------------
+         * [2节点]  [k]                                                             [k黑色]
+         * 
+         * --------------------------------------------------------------------------------------------------------------------------
+         * [3节点]  [k1, k2]                                                        [k2黑色]     or    [k1黑色]
+         *                                                                          /                        \
+         *                                                                   [k1红色]                         [k2红色]
+         * 
+         * 
+         * ------------------------------------------------------------------------------------------------------------------------------------
+         * [4节点]  [k1, k2, k3]                                                    [k2黑色] 
+         *                                                                         /       \
+         *                                                                 [k1红色]          [k3红色]
+         *                                                        
+         * 
+        */
+
+
+        /**
+         * 红黑树插入节点的情况分析
+         * 插入一个 [2节点 父节点是黑色的父节点就是而节点] 不用调整
+         * 插入一个 [3节点 父节点是红色的 如果 父节点的兄弟节点是黑色的 or 父节点没有兄弟节点] 仅仅只需要旋转 后 改变颜色即可，也就是变成 
+         * 插入一个 [4节点 父节点是红色的 同时 父节点的兄弟节点也是红色的] 需要递归的改变颜色 从下到上，一次检查; 
+        */
+        const red = "red";
+        const black = "black";
+
+        class RBTreeNode{
+            k;
+            left;
+            right;
+            parent;
+            color = red;
+            constructor(k = null, left = null, right = null, parent = null){
+                this.k = k;
+                this.left = left;
+                this.right = right;
+                this.parent = parent;
+            }
+        }
+
+        class RBTree{
+            root
+
+            constructor(root = null){
+                this.root = root;
+            }
+
+            /**
+             * 以node节点作为支点向右旋转说明
+             * 通过赋值给node.parent的子节点实现对RBTree 树的修改
+             * 
+             * 情况1 - node 节点是父节点的左子节点
+             * 
+             * 旋转前  
+             *                              node.parent
+             *                             /
+             *                         node
+             *                        /    \
+             *               node.left      node.right
+             *              /         \
+             * node.left.left          node.left.right
+             * 
+             * 旋转后 
+             *                          node.parent
+             *                         /
+             *                node.left
+             *               /         \
+             * node.left.left           node
+             *                         /    \
+             *            node.left.right    node.right
+             * 
+             * ------------------------------------------------
+             * 
+             * 
+             * 情况2 - node 节点是父节点的右子节点
+             * 
+             * 旋转前  
+             *            node.parent
+             *                        \
+             *                         node
+             *                        /    \
+             *               node.left      node.right
+             *              /         \
+             * node.left.left          node.left.right
+             * 
+             * 旋转后 
+             *                          node.parent
+             *                         /
+             *                node.left
+             *               /         \
+             * node.left.left           node
+             *                         /    \
+             *            node.left.right    node.right
+             * 
+             * 
+             * ------------------------------------------------
+             * 情况3 - node 节点是 根节点
+             * 
+             * 旋转前  
+             *            node.parent
+             *                        \
+             *                         node
+             *                        /    \
+             *               node.left      node.right
+             *              /         \
+             * node.left.left          node.left.right
+             * 
+             * 旋转后 
+             *                          node.parent
+             *                         /
+             *                node.left
+             *               /         \
+             * node.left.left           node
+             *                         /    \
+             *            node.left.right    node.right
+             * 
+             * 
+             * 
+             * 
+            */
+            rotateRight(node){
+                const t = node.left;
+                // 更新t.parent
+                t.parent = node.parent;
+
+                // 更新原node父节点的对应子节点指针
+                if(node.parent === null){ // node 是根节点
+                    this.root = t; 
+                }else if(node === node.parent.left){
+                    node.parent.left = t;
+                }else if(node === node.parent.right){
+                    node.parent.right = t;
+                }
+                
+                // 跟新node的左子节点
+                node.left = t.right;
+                if(t.right !== null){
+                    t.right.parent = node;
+                }
+                
+                // 更新 t 的右子节点
+                t.right = node;
+                node.parent = t;
+
+                return this;
+
+            }
+
+
+            /**
+             * 以node 节点作为指点向左旋转
+             * 
+             * 通过设置node.parent的对应子节点的索引实现当前子树的修改
+             * 
+             * 情况1 - node节点是父节点的右子树
+             * 
+             * 旋转之前
+             * node.parent
+             *            \
+             *             node
+             *                 \
+             *                  node.right
+             *                 /          \
+             *  node.right.left            node.right.right
+             * 
+             * 
+             * 旋转之后
+             * 
+             * node.parent
+             *            \
+             *             node.right
+             *            /          \
+             *        node            node.right.right
+             *            \
+             *             node.right.left
+             * 
+             * 
+             * 
+             * 情况2 - node节点是父节点的左子树
+             * 
+             * 旋转之前
+             *                  node.parent
+             *                 /
+             *             node
+             *                 \
+             *                  node.right
+             *                 /          \
+             *  node.right.left            node.right.right
+             * 
+             * 
+             * 旋转之后
+             * 
+             * node.parent
+             *            \
+             *             node.right
+             *            /          \
+             *        node            node.right.right
+             *            \
+             *             node.right.left
+             * 
+             * 
+             * 
+             * 情况3 - node节点是根节点
+             * 
+             * 旋转之前
+             * node.parent === null
+             *                      \
+             *                       node
+             *                           \
+             *                            node.right
+             *                           /          \
+             *            node.right.left            node.right.right
+             * 
+             * 
+             * 旋转之后
+             * 
+             * node.parent === null
+             *                     \
+             *                       node.right
+             *                      /          \
+             *                  node            node.right.right
+             *                      \
+             *                       node.right.left
+             * 
+             * 
+             * 
+            */
+            rotateLeft(node){
+                const t = node.right;
+                t.parent = node.parent
+
+                if(node.parent === null){
+                    this.root = t;
+                }else if(node === node.parent.right){
+                    node.parent.right = t;
+                }else if(node === node.parent.left){
+                    node.parent.left = t;
+                }
+
+                node.right = t.left;
+                if(t.left !== null){
+                    t.left.parent = node;
+                }
+
+                t.left = node;
+                node.parent = t;
+
+                return this;
+
+            }
+
+            add(v){
+                if(v === null || v === undefined){
+                    throw new Error('v 的值不能够是null or undefined')
+                    return ;
+                }
+
+                if(this.root === null){
+                    this.root = new RBTreeNode(v)
+                    this.root.color = black;
+                }else{
+                    this.addProcess(v,this.root)
+                }
+                // step(`插入关键值[${v}]完成效果`, 'none', '#ccc')
+            }
+
+            // 遍历子树 再合适的指针位置上添加新的节点
+            addProcess(v, node){
+                if(node === null){
+                    throw new Error('addProcess(v, node): 参数 node 不能是null')
+                }
+
+                let pointer = node;
+                let parent;
+                let comp;
+                do{
+                    parent = pointer
+                    comp = v - pointer.k
+                    if(comp < 0){
+                        pointer = pointer.left
+                    }else if(comp > 0){
+                        pointer = pointer.right;
+                    }else{
+                        throw new Error('有相同的关键字:['+ v + "]")
+                        return;
+                    }
+
+                // 用来判断当前节点是否已经到了叶子节点
+                // === null 表示到了叶子节点
+                }while(pointer !== null)
+
+                const __node = new RBTreeNode(v,null, null, parent);
+                
+                if(comp < 0){
+                    parent.left = __node;
+                }else if(comp > 0){
+                    parent.right = __node;
+                }
+
+                // 开始向上递归修复
+                this.fixAfterAdd(__node)
+            }
+
+            /**
+             * 每当添加一个新的节点的时候，就需要向上检查检点修复
+             * 
+             * 通过检查父节点的状态实现修复
+             * 
+             * 情况1
+             *      # 父节点是 [2节点 父节点是黑色的] 情况 不需要调整
+             * 情况2
+             *      # 父节点是 [3节点 父节点是红色的 && (父节点没有兄弟节点 || 父节点的兄弟节点是黑色)] 的情况
+             *          ## 插入后的位置情况 1 [LL 父节点是爷爷节点的左子节点， 新节点是父节点的左子节点]
+             *                   pp
+             *                  /
+             *                 p
+             *                /
+             *             cur
+             *                  以pp点为基准向右旋转
+             *                  设置 p.color = black
+             *                  设置 pp.color = red;
+             *                  设置 cur.color = re;
+             *          ## 插入后的位置情况 2 [LR 父节点是爷爷节点的左子节点， 新节点是父节点的右子节点]
+             *               pp
+             *              /
+             *             p
+             *              \
+             *               cur
+             *                  以 p  点位基准向左旋转
+             *                  以 pp 点位基准向右旋转
+             *                  设置 p.color = pp.color = red;
+             *                  设置 cur.color = black;
+             *          ## 插入后的位置情况 3 [RR 父节点是爷爷节点的右子节点， 新节点是父节点的右子节点]
+             *             pp
+             *               \
+             *                 p
+             *                   \
+             *                     cur
+             *                  以 pp 点为基准向左旋转
+             *                  设置 pp.color = cur.color = red;
+             *                  设置 p.color = black;
+             *          ## 插入后的位置情况 4 [RL 父节点是爷爷节点的右子节点， 新节点是父节点的左子节点]
+             *             pp
+             *               \
+             *                 p
+             *               /
+             *            cur
+             *                  以 p 点位基准向右旋转
+             *                  以 pp 点位基准向左旋转
+             *                  设置 pp.color = cur.color = red;
+             *                  设置 p.color = black;
+             * 
+             *       因为 [3节点对应的 红黑树一定是 上黑下红 所以不需要 向上遍历操作]
+             *  
+             * 情况3
+             *      # 父节点是 [4节点 父节点是红色的 && 父节点的兄弟节点是红色的] 情况
+             *          - 需要向上遍历调整节点的颜色
+             *          - 设置父节点和父节点的兄弟节点是黑色
+             *          - 父节点的父节点设置颜色是红色
+             *          - 把父节点的父节点当作当前新插入的节点再次进行检查
+             *          - 一直到根节点位置 || 节点的父节点是黑色 || 节点是null 
+             * 
+             * 
+            */
+            fixAfterAdd(node){
+                /**
+                 * 向上遍历的结束条件
+                 * 
+                 * node !== null 不要超出范围
+                 * node !== this.root 根节点不需要再向上遍历
+                 * node.parent.color === red 父节点的颜色必须红色才需要继续
+                */
+                while(node !== null &&  node !== this.root  && node.parent.color === red){
+                    const parentSibling = this.getSibling(node.parent);
+
+                    if(
+                        (parentSibling === null ||  parentSibling.color === black) 
+                        && node.parent === node.parent.parent.left
+                        && node === node.parent.left    
+                    ){// LL
+                        // step("1 右旋之前", "none", "blue")
+                        this.rotateRight(node.parent.parent)
+                        // step("1 右旋之后", "none", "blue")
+                        node.color = red;
+                        node.parent.color = black;
+                        node.parent.right.color = red;
+                        // step("1 调整颜色之后", "none", "blue")
+                        return this;
+                    }else if(
+                        (parentSibling === null || parentSibling.color === black)
+                        && node.parent === node.parent.parent.left
+                        && node === node.parent.right
+                    ){// LR
+                        // step("2 左旋之前", "none", "blue")
+                        this.rotateLeft(node.parent);
+                        // step("2 左旋之后", "none", "blue")
+                        this.rotateRight(node.parent);
+                        // step("2 右旋之后", "none", "blue")
+                        node.color =black;
+                        node.left.color = red;
+                        node.right.color = red;
+                        // step("2 调整颜色之后", "none", "blue")
+                        return this;
+                    }else if(
+                        (parentSibling === null || parentSibling.color === black)
+                        && node.parent === node.parent.parent.right
+                        && node === node.parent.right
+                    ){// RR
+                        
+                        // step("3 左旋之前", "none", "blue")
+                        this.rotateLeft(node.parent.parent);
+                        // step("3 左旋之后", "none", "blue")
+                        node.color =red;
+                        node.parent.color = black;
+                        node.parent.left.color = red;
+                        // step("3 调整颜色之后", "none", "blue")
+                        return this;
+                    }else if(
+                        (parentSibling === null || parentSibling.color === black)
+                        && node.parent === node.parent.parent.right
+                        && node === node.parent.left
+                    ){ // RL
+                        // step("4 右旋之前", "none", "blue")
+                        this.rotateRight(node.parent);
+                        // step("4 右旋之后", "none", "blue")
+                        this.rotateLeft(node.parent);
+                        // step("4 左旋之后", "none", "blue")
+                        node.color =black;
+                        node.left.color = red;
+                        node.right.color = red;
+                        // step("4 调整颜色之后", "none", "blue")
+                        return this;
+                    }else{ // 父节点的兄弟是红色的
+                        node.parent.color = black;
+                        parentSibling.color = black;
+                        node.color = red;
+                        node.parent.parent.color = red;
+                        node = node.parent.parent;
+                    }
+                }
+
+                this.root.color = black;
+            }
+
+            getSibling(node){
+                return node === node.parent.left ? node.parent.right : node.parent.left;
+            }
+
+        }
+
+        /**
+         * 绘制红黑树
+        */
+        function drawRBTree(node){
+            const cellSize = 30;
+            const cellSpace = 30;
+            const treeHeight = getHeight(node) // 从0开始
+            const maximumNumberOfPossibleNodes = Math.pow(2, treeHeight);
+            const canvasPadding = 10;
+            const canvasContentWidth = maximumNumberOfPossibleNodes * cellSize + (maximumNumberOfPossibleNodes - 1 ) * cellSpace;
+            const canvasContentHeight = (treeHeight + 1) * cellSize + treeHeight * cellSpace;
+            const canvasWidth = canvasContentWidth + canvasPadding * 2;
+            const canvasHeight = canvasContentHeight + canvasPadding * 2;
+
+            const _canvas_ = document.createElement('canvas')
+            _canvas_.width = canvasWidth;
+            _canvas_.height = canvasHeight;
+            _canvas_.style.width = canvasWidth + 'px';
+            _canvas_.style.height = canvasHeight + "px"
+            _canvas_.style.border = "1px solid #ccc";
+
+            const ctx = _canvas_.getContext('2d');
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            const nodes = []
+
+            layerTraverse(nodes, node)
+
+            //__nodes 每一层的节点数组
+            // depath 深度
+            nodes.forEach((__nodes, depath, nodes) => {
+                const positionYTop = depath * cellSize + depath * cellSpace + canvasPadding;
+                const maxCells = __nodes.length;
+                const colSize = canvasContentWidth / maxCells
+                __nodes.forEach((node, index) => {
+                    const positionXLeft = index * colSize + colSize / 2 - cellSize / 2 + canvasPadding;
+                    const center = {
+                        x: positionXLeft + cellSize / 2,
+                        y: positionYTop + cellSize / 2
+                    }
+                    if(node !== null){
+                        ctx.beginPath()
+                        ctx.fillStyle = node.color;
+                        ctx.fillRect(positionXLeft, positionYTop, cellSize, cellSize);
+                        ctx.fillStyle = "#fff";
+                        ctx.fillText(node.k, center.x, center.y)
+                        node.center = center;
+                    }
+                    if(node !== null && depath !== 0){
+                        ctx.strokeStyle = "#666";
+                        ctx.beginPath();
+                        ctx.moveTo(node.parent.center.x , node.parent.center.y + cellSize / 2)
+                        ctx.lineTo(center.x, positionYTop )
+                        ctx.stroke();
+                    }
+                })
+            })
+
+            document.querySelector('.container').appendChild(_canvas_);
+        }
+
+        /***
+         *  层遍历把全部的节点保存再 传递进去的a数组里面
+         */ 
+        function layerTraverse(a, ...nodes){
+            a.push(nodes)
+            let t = []
+            nodes.forEach(item => {
+                t.push(item ? item.left : null, item ? item.right : null)
+            })
+            if(t.some(item => item)){
+                layerTraverse(a, ...t)
+            }
+        }
+
+        /**f
+         * 获取红黑树的高度
+        */
+        function getHeight(node){
+            // console.log("getHeight: node: ", node)
+            if(node === null){
+                return -1 
+            }else{
+                return Math.max(getHeight(node.left), getHeight(node.right)) + 1;
+            }
+        }
+
+        function step(msg, background = "#fff", color = "#333"){
+            const _div_ = document.createElement('div')
+            _div_.style.background = background;
+            _div_.style.color  =color;
+            _div_.innerText = msg;
+            document.querySelector('.container').appendChild(_div_);
+            drawRBTree(rbTree.root)
+        }
+
+
+        let rbTree = new RBTree()
+
+        let a = [];
+        for(let i =0; i< 200; i++){
+            a.push(i)
+        }
+
+        a.sort(() => Math.random() - 0.5)
+
+        a.forEach(v => {
+            // step(`开始插入关键值：[${v}]`)
+            rbTree.add(v)
+        })
+        drawRBTree(rbTree.root)
+        check(rbTree)
+
+        
+        // 5： 任一点到下面的叶子节点中 黑稿相同
+        function check(rbTree){
+            if(rbTree.root.color === red){
+                console.error('根节点不是黑色的')
+            }
+            // 检查黑高是否相同
+            preTraverse(rbTree.root, checkHeight)
+            preTraverse(rbTree.root, checkColor)
+        }
+
+        function checkColor(node){
+            if(node.color === red && node.left !== null && node.left.color === red){
+                step('检验颜色冲突')
+                debugger;
+            }else if(node.color === red && node.right !== null && node.right.color === red){
+                step('检验颜色冲突')
+                debugger;
+            }
+        }
+
+        function preTraverse(node, callback){
+            if(node === null){
+                return 
+            }
+
+            callback(node)
+            preTraverse(node.left, callback)
+            preTraverse(node.right, callback)
+        }
+
+        function checkHeight(node){
+            const o = getBHeight(node)
+            if(o.leftBH !== o.rightBH){
+                console.error('当前节点的黑高不同： ', node, o.leftBH, o.rightBH)
+                const _div_ = document.createElement('div')
+                _div_.style.color = "red"
+                _div_.innerText = "当前节点的黑高不同 " + o.leftBH + " : " + o.rightBH;
+                drawRBTree(node)
+                debugger;
+            }else{
+                // console.log(o)
+            }
+        }
+
+        function getBHeight(node){
+            if(node === null){
+                return {
+                    leftBH: -1,
+                    rightBH: -1
+                };
+            }else if(node.color === black){
+                return {
+                    leftBH:  getBHeight(node.left).leftBH + 1,
+                    rightBH: getBHeight(node.right).leftBH + 1
+                }
+            }else{
+                return {
+                    leftBH:  getBHeight(node.left).leftBH,
+                    rightBH: getBHeight(node.right).leftBH
+                }
+            }
+        }
+    </script>
+</body>
+</html>

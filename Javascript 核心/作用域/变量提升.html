@@ -1,0 +1,107 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 变量提升
+        /**
+         * 变量提升的概念
+         *      变量提升就是把变量的声明，移动到作用域的顶端去执行
+         *      在创建当前作用域的时候就会首先声明当前作用域可能用到的变量
+         * 能够实现变量提升的声明
+         * 
+         *      function
+         *      var
+         * 
+         * 区别
+         *      var 声明会被提升，但是赋值操作还是在原来的为止，所以在赋值操作之前变量===undefined
+         *          而且不受 {} 这样的块作用域限制，[外部能够方位块作用域内部的变量]
+         * 
+         *      function 声明和赋值都会比提升， 可以在作用域内的任何地方访问
+         *               如果 function 声明的变量在 {} 块级作用域的里面，
+         *               那么只会提升变量的声明
+         *               赋值提升到当前块级作用域的顶部，所以在声明前这个函数的变量 === undefined;
+         * 
+         * 
+         *                     
+         * 
+         * 
+         * 
+         * 
+        */
+
+        console.log("a 应该是 undefined",a) // 输出undefined
+        console.log("b 应该是 b",b) // 输出函数 b
+        var a = 10;
+        function b(){ }
+        console.log("a 应该是 10",a)  // 输出 10
+        console.log("b 应该是 b",b) // 输出函数b
+
+
+
+        console.log('------------------------')
+        console.log('c 应该是 undefined: ', c)
+        {
+
+            function c(){}
+        }
+        console.log('c 应该是 c: ', c)
+
+
+
+        
+        console.log('------------------------')
+        console.log('e 应该是 undefined: ', e)
+        console.log('f 应该是 undefined: ', f)
+        {
+            "use strict"
+            var e = "e"
+            function f(){ console.log('f') }
+        }
+        console.log('e 应该是 e: ', e)
+        console.log('f 应该是 f', f)
+
+
+        
+        console.log('------------------------')
+        console.log('g 应该是 undefined:', g)
+        console.log('h 应该是 undefined',  h)
+        if(true){
+            "use strict"
+            var g = "g"
+            function h(){}
+        }
+        console.log('g 应该是 g： ',g)
+        console.log('h 应该是 h: ',h)
+
+
+        // 理解 function 赋值会提升到当前块级作用域的顶部
+        // 不会提升到 块级外层作用域的顶部
+
+        console.log('应该输出 undefined', fn)
+        var fn = 100
+        {
+
+            console.log('应该输出函数 fn: ',fn)
+            fn = 99
+            function fn(){}
+            
+            console.log('应该输出 99', fn)
+        }
+        
+        console.log('应该输出99', fn)
+
+
+        
+ 
+
+ 
+
+
+    </script>
+</body>
+</html>

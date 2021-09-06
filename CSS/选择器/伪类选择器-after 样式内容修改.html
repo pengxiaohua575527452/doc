@@ -1,0 +1,93 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul class='ul'>
+        <li>content1</li>
+        <li>content2</li>
+    </ul>
+    <style class='style1'>
+        .ul:after{
+            content:'.ul:after';
+            color: red;
+        }
+        .ul>li{
+            color: red;
+        }
+    </style>
+    <style>
+        .ul:before{
+            content: '.ul:before'
+        }
+        .ul>li{
+            color: blue;
+        }
+    </style>
+    <script>
+        // 实现修改伪类的内容的方法
+        
+
+        // // 通过插入新的 cssStyleRule 实现
+        // const _ul_ = document.querySelector('.ul')
+
+        // console.log('_ul_: ', _ul_.style)
+
+        // // 通过添加新的 sytle 标签实现
+        const _style_ = document.createElement('style')
+        _style_.innerText = `.ul:after { content: "修改后"}`
+        document.body.appendChild(_style_)
+
+        
+        // // 通过修改原来的 insertRule 实现
+        // // 获取样式
+        // const styleSheets = document.styleSheets;
+        // // 获全部样式的键名 重新排序从后向前开始遍历
+        // const styleSheetsKeys  = Reflect.ownKeys(styleSheets).reverse()
+        // for(let cssStyleSheet of styleSheets){
+        //     const cssRuleList = cssStyleSheet.cssRules;
+        //     Reflect.ownKeys(cssRuleList).forEach(key => {
+        //         const selectorText = cssRuleList[key].selectorText;
+        //         // 找到匹配的 选择器
+        //         if(selectorText === ".ul::after"){
+        //             // 插入新的 cssRule
+        //             cssStyleSheet.insertRule(`.ul:after {content:  "通过 insertRule 实现修改"}`, cssRuleList.length)
+        //         }
+        //     })
+        // }
+
+        
+
+        function changeAfterContent1(selector, content){
+            // 通过修改原来的 insertRule 实现
+            // 获取样式
+            const styleSheets = document.styleSheets;
+            // 获全部样式的键名 重新排序从后向前开始遍历
+            const styleSheetsKeys  = Reflect.ownKeys(styleSheets).reverse()
+            for(let cssStyleSheet of styleSheets){
+                const cssRuleList = cssStyleSheet.cssRules;
+                Reflect.ownKeys(cssRuleList).forEach(key => {
+                    const selectorText = cssRuleList[key].selectorText;
+                    const _selector =  selector+"::after"
+                    // 找到匹配的 选择器
+                    if(selectorText === selector+"::after"){
+                        // 插入新的 cssRule
+                        cssStyleSheet.insertRule(`${selector}:after {content:  "${content}"}`, cssRuleList.length)
+                    }
+                })
+            }
+
+        }
+
+        
+
+        changeAfterContent('.ul', "")
+
+
+     
+    </script>
+</body>
+</html>

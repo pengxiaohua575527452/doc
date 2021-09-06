@@ -1,0 +1,37 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class='container'></div>
+
+    <script type="module">
+        import { RBTree, isRBTree } from "./typescript/rbtree.js"
+        import { drawRBTree } from "./typescript/drawRBTree.js"
+        import { testAllInsertOperation, largeScaleRandomTest } from "./typescript/rbtree_test_all_type_insert_operation.js"
+        import { testFnIsRBTree } from "./typescript/rbtree_test_fn_isRBTree.js"
+        import { testAllDelOperation, largeScaleRandomTest as largeScaleRandomTestRemoveNode } from "./typescript/rbtree_test_all_type_del_operation.js"
+        // 测试全部类型的插入操作
+        // testAllInsertOperation()
+        
+        // 大规模的测试插入节点操作
+        // largeScaleRandomTest()
+
+        // 测试 检查红黑树是否合法的 函数
+        // testFnIsRBTree()
+
+
+        // 测试全部类型的删除操作
+        // testAllDelOperation()
+
+        // 大规模测试删除
+        largeScaleRandomTestRemoveNode()
+       
+       
+       
+    </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+ 
+    // 扁平对象{"A":1,"B.A":2,"B.B":3,"CC.D.E":4,"CC.D.F":5},
+
+    // 还原后的嵌套对象 {A:1,"B":{"A":2,"B":3},"CC":{"D":{"E":4,"F":5}}}
+
+    function fn(o){
+        let keys = Reflect.ownKeys(o)
+        let t = {}
+        keys.forEach(str => {
+            // 获取值
+            let v = o[str]
+            // 创建一个新的临时对象用来保存值
+            // 从最内部的键名开始
+            let _t = {}
+            str.split(".").reverse().forEach((key, index) => {
+                let obj = {}
+                index === 0 ? obj[key] = v : obj[key] = _t
+                _t = obj
+            })
+
+            // 比较对象赋值
+            let outT= t;
+            let b = true;
+            while(b){
+                if(Object.prototype.toString(_t).slice(8,-1) !== "Object"){
+                    console.error('_t 不是一个对象： ',_t)
+                    break;
+                }
+                // 获取临时对象的键名
+                key = Reflect.ownKeys(_t)
+                // 因为参数对象不会有重复的属性
+                // 所以只需要检查属性的值 === undefined
+                if(outT[key] === undefined){
+                    outT[key] = _t[key]
+                    b = false;
+                }else{
+                    outT = outT[key];
+                    _t = _t[key]
+                }
+            }
+        })
+        return t;
+    }
+
+
+    let t = fn({"A":1,"B.A":2,"B.B":3,"CC.D.E":4,"CC.D.F":5})
+ 
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        class RBTreeNode{
+            k;
+            left;
+            right;
+            constructor(k= null, left = null, right = null){
+                this.k = k;
+                this.left = left;
+                this.right = right;
+            }
+        }
+
+        function r_rotate(node){
+            const root = node.left;
+            node.left = root.right;
+            root.right = node
+            return root
+        }
+
+        function l_rotate(node){
+            const root = node.right;
+            node.right = root.right
+            root.left = node;
+            return root;
+        }
+
+        // 测试左旋和右旋
+        // 测试元素
+        let root = new RBTreeNode(
+            200,
+            new RBTreeNode(
+                100,
+                new RBTreeNode(50),
+                new RBTreeNode(150)
+            ),
+            null    
+        )
+
+        console.log('root: ', root)
+        root = r_rotate(root)
+        root = l_rotate(root)
+        console.log('右旋以后的root: ', root)
+
+
+      
+    </script>
+</body>
+</html>

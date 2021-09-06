@@ -1,0 +1,44 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>sub.html</p>
+    <label for="">
+        <span>目标</span>
+        <input type="text" class='content'>
+    </label>
+    <label for="">
+        <span>数据内容</span>
+        <input type="text" class='target'>
+    </label>
+    
+    <button class='btn'>sendMessage</button>
+    <script>
+        const bc = new BroadcastChannel('index')
+        bc.onmessage = function(messageEvent){
+            const data = messageEvent.data;
+            if(data.target === 'sub'){
+                console.log('sub.html 接收到了广播的消息')
+            }
+        }
+
+        bc.onmessageerror = function(messageEvent){
+            console.error('sub.html messageError ', messageEvent)
+        }
+
+        const _btn_ = document.querySelector('.btn')
+        const _content_ = document.querySelector('.content')
+        const _target_ = document.querySelector('.target')
+        _btn_.addEventListener('click', e => {
+            const target = _target_.value;
+            const data = _content_.value;
+            const message = {target, data}
+            bc.postMessage(message)
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        <li><h3>函数 this 值的指向</h3></li>
+        <li>
+            <h4>如果使用function 关键字 声明一个函数 function fn(){}</h4>
+            <ul>
+                <li>在严格模式下</li>
+                <ul>
+                    <li>作为对象的方法调用</li>
+                    <ul>
+                        <li>this 指向调用的对象</li>
+                    </ul>
+                    <li>作为函数调用</li>
+                    <ul>
+                        <li>this 指向 undefined</li>
+                    </ul>
+                    <li>
+                        备注：
+                        <ul>
+                            <li>采用严格模式的方式</li>
+                            <ul>
+                                <li>"use strict"</li>
+                                <li>class</li>
+                            </ul>
+                        </ul>
+                    </li>
+                </ul>
+                <li>在非严格模式下</li>
+                <ul>
+                    <li>作为对象的方法调用</li>
+                    <ul>
+                        <li>this 指向调用的对象</li>
+                    </ul>
+                    <li>作为函数调用</li>
+                    <ul>
+                        <li>this 指向 window</li>
+                    </ul>
+                </ul>
+            </ul>
+        </li>
+        <li>
+            <h4>如果使用 箭头函数 const fn = () => {}</h4>
+            <ul>
+                <li>箭头函数中的this 值指向 所在环境上下文的 this</li>
+            </ul>
+        </li>
+        <li><h4>全局作用域环境下的this 指向 window</h4></li>
+    </ul>
+    <script type="text/javascript" src="this-point/global-no-strict-this.js"></script>
+    <script type="text/javascript" src="this-point/global-strict-this.js"></script>
+    <script type="text/javascript" src="this-point/scope-no-strict-this.js"></script>
+    <script type="text/javascript" src="this-point/scope-strict-this.js"></script>
+    <script>
+        // console.log('--------------------------')
+        // var length = 10
+        // function fn() {
+        //     console.log(this.length);
+        // }
+        
+        // var obj = {
+        //     length: 5,
+        //     method: function(fn) {
+        //         // 这里输出的是10 没有问题
+        //         fn();
+
+        //         // 作为augument 的属性调用
+        //         arguments[0]();
+        //     }
+        // };
+
+        // obj.method(fn, 1)
+    
+
+    </script>
+</body>
+</html>

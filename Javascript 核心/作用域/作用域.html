@@ -1,0 +1,202 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h3>作用域</h3>
+    <h5>基础名词解释：</h5>
+    <pre>
+
+作用域的概念
+    作用域就是规定变量or表达式的可见范围；
+
+全局作用域
+    在程序的任何地方都能偶访问的变量就是全局作用域范围内的变量
+局部作用域
+    旨在程序的某些代码的内部可以访问的变量就是属于局部作用域范围；
+    例如： 函数的内部 ， 模块的内部;
+块作用域
+    属于局部作用域范畴；主要指被 {}【花括号】包围起来的情况；
+作用域链
+    在程序中内部作用域能够访问外部作用域的变量；
+    外部作用域无法访问内部作用域的变量；
+    如果当前作用域无法找到指定的变量，那么需要依次向外部作用域查找
+    直到找到指定的变量，
+    或者在全局作用域范围都找到不到 返回 undefined 为止;
+    从内向外查早的这个特性就是作用域链；
+ 
+
+
+let const  var 声明的变量的区别；
+    let const 
+        声明的变量属于块级作用域概念的范畴
+        不会提升变量
+        let const 不能够声明重复的变量会报错
+        例如：
+        <div style="background: #efefef;">
+        {
+            let a = "aa"
+        }
+        // 在花括号的外部无法访问 a 这个变量
+        // 不能偶在函数作用域范围的外部访问
+        </div>
+    var
+        声明的变量不属于块级作用域概念的范畴，不受花括号的影响
+        var 在函数作用狱中会出现变量提升的情况；
+        var 可以重复声明变量
+        例如：
+        <div style="background: #efefef;">
+        {
+            var a = "aa"
+        }
+        // 可以在 花括号的外部访问 a 这个变量
+        // 但是不能偶在函数作用域范围的外部访问
+
+
+        // 变量提升
+        var a = 10;
+        function fn(){
+            console.log(a); // undefined;
+            var a = 1; // 变量会提升到作用域的顶端 声明，但是在当前为止赋值;
+            console.log(a)// 1
+        }
+        fn()
+        console.log(a) // 10
+        </div>
+
+函数的作用域
+    非官方的理解：
+        函数包括两个块级作用域，一个是参数作用域，一个是函数体作用域
+        <div style="background: #efefef;">
+        function (参数作用域){ 函数体作用域}
+        可以简单粗暴的理解为一下的样式；
+        {
+            参数作用域
+            {
+                函数体作用域 
+            }
+        }
+        
+        例如：
+        function out(a, fn = () => console.log(a,c)){
+            let c = "cc"
+            fn()
+        }
+        可以把作用域理解为
+        {
+            let a;
+            // 变量 c 只能从外层的作用域链上查找
+            // 无法访问内部的c
+            le fn = () => console.log(a,c); 
+
+            {
+                let c = "cc"
+                fn()
+            }
+        }
+
+        // 报错 因为c没有定义
+        // 因为 外层的作用域链上没有 c 变量
+        out('aa')
+        </div>
+for 循环作用域
+    非官方的理解：
+        <div style="background: #efefef;">
+            for(let i; i < 1;i ++){
+                console.log(i)
+            }
+            可以解析成这样
+            {
+                let i;
+                let fn = (i) => {console.log(i)}
+                while(i < 1){
+                    fn(i)
+                    i++;
+                }
+            }
+
+
+            for(var i; i < 1;i++){
+                console.log(i)
+            }
+            可以解析成这样
+            {
+                let i;
+                let fn = () => {console.log(i)}
+                while(i < 1){
+                    fn()
+                    i++;
+                }
+            }
+
+            一个传递参数，一个是直接从作用域链上访问
+        </div>
+     
+    
+    
+
+    
+
+    
+
+    </pre>
+    <script>
+        // 可以查看 https://www.zhihu.com/question/28976647/answer/639673812
+        // 作用域的概念
+        // 一个变量或表达式可以方位的范围就是作用域
+        // 全局作用域
+        // 局部作用域
+        //      局部作用域分为 块级作用域 和 函数作用域
+        // 作用域是在代码定义的地方规定的；
+        // 模块的作用域
+        // 函数的默认值 做用户
+
+        // let const var 区别
+
+        // let const 在圆括号范围内声明 只有 紧跟的 花括号内部可见，
+        // var 圆括号范围内声明在花括号的外部可见
+        // let 在全局作用域范围内不会把 变量绑定在当前作用范围的对象上
+        // var 在全局作用域范围内会把变量作为window的属性声明
+        // 内部作用域
+        // 作用域链
+        // 内部的作用域可以访问外部的作用域
+        // 外部的作用域不可以方位内部的作用域
+        // 如果当前作用域无法访问到指定的变量
+        // 那么向外层的作用域查找指定的变量
+        // 直到找到 或 返回 undefined 为止；
+
+
+        // 执行上下文在运行时确定，随时可能改变；作用域在定义时就确定，并且不会改变。
+      
+        // 作用域是在声明一个变量的时候就已经创建并且固化了，不会随代码的执行而发生变化；
+        
+        // {
+        //    var a = 'aa' 
+        // }
+        // console.log('a: ', a)
+
+        // let c = "out"
+        // function fn(a, fn = function(){ console.log(a,c)}){
+        //     let c = "cc"
+        //     fn()
+        // } 
+
+        // fn("aa");
+
+        // for(var a = 0; a < 1; a++){}
+        // console.log(a)
+
+        var a = 1;
+        function fn(){
+            console.log('a: ', a)
+            var a = 10;
+            console.log('a: ', a)
+        }
+        fn();
+        console.log(a)
+    </script>
+</body>
+</html>

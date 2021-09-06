@@ -1,0 +1,122 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script type="text/javascript">
+        // 闭包
+        // 个人理解
+        // 是一种程序的设计思想，
+        // 实现外部访问 局部函数作用域中的变量的实现方法；
+        // 所以 闭包必须在一个局部函数作用域的内部
+        // 闭包必须关联局部函数作用域中的至少一个变量
+        // 主要的作用，就是用来隔离数据
+        
+
+        // function Person(){
+        //     // 变量name 和函数getName 共同实现了一个闭包
+        //     let name = "bill"
+        //     function getName(){
+        //         return name;
+        //     }
+        // }
+
+
+                // // 同样可以这样写
+        // // 同样是 变量name 和 函数 getName 共同实现了一个闭包
+        // function Person(name){
+        //     function getName(){
+        //         return name
+        //     }
+        // }
+
+        // 使用实例
+        // 创建学生模型， 要求学生的id不能够修改
+        // 可以修改学生的名称
+
+        // function Person(id,name){
+        //     return {
+        //         name: name,
+        //         getId(){
+        //             return id
+        //         }
+        //     }
+        // }
+        
+        // let bill = Person("id",'bill')
+        // console.log(bill.name)
+        // console.log(bill.id)
+
+        // bill.id = "100"
+        // console.log(bill.getId())
+
+
+        // 为了防止以外的更改 和 访问的习惯
+        // 可以搭配 get set 使用
+
+        function Person(id, name){
+            // 这里的这个o 就是闭包中的变量
+            
+            const o = {id: id, name: name};
+            return {
+                get id(){
+                    return o.id
+                },
+                set id(newId){
+                    console.error('警告 不能够修改对象的 id')
+                },
+                get name(){
+                    return o.name
+                },
+                set name(newName){
+                    o.name = newName
+                }
+
+            }
+        }
+
+        let bill = Person('id', 'bill')
+
+        console.log(bill.id)
+        console.log(bill.name)
+
+        bill.name = 'change'
+        bill.id = 'changeid'
+        console.log(bill.id)
+        console.log(bill.name)
+
+        // console.log('bill: ', bill)
+
+        // let jack = Person('id2', 'jack')
+        // jack.id = "jacknewid"
+        // jack.name = 'jack new name'
+        // console.log('jack: ', jack)
+
+        // // 为了防止以外的更改 和 访问的习惯
+        // // 可以采用 proxy 对象
+
+        // function Person(id, name){
+        //     // 这里的这个o 就是闭包中的变量
+          
+        //     const o = {id: id, name: name};
+        //     const p = new Proxy(o, {
+        //         get(target, prop, receiver){
+        //             return Reflect.get(target, prop, receiver)
+        //         },
+        //         set(target, prop, value, receiver){
+        //             if(prop === "id"){
+        //                 console.error('警告 不能够修改对象的 id')
+        //             }else{
+        //                 return Reflect.set(target,prop, value,receiver)
+        //             }
+        //         }
+        //     })
+        //     return p
+        // }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,732 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        <li>B树 - 就是平衡的多路查找树</li>
+        <ul>
+            <li>名词解释：</li>
+            <ul>
+                <li>阶 [B树的阶]</li>
+                <ul>
+                    <li>B树中 <strong>最大的可拥有的子节点数量m</strong> 作为B树的阶</li>
+                    <li>一棵B树可以是空树 or 满足一下特性的 m叉树</li>
+                </ul>
+            </ul>
+        </ul>
+        <ul>
+            <li>满足B树特性的 m叉树</li>
+            <ul>
+                <li>除根节点和叶子节点以外，能够最多拥有 m 个子节点（最多拥有 m-1 个关键字） ，最少拥有 [m/2]（向上取整）棵子树</li>
+                <li>如果根节点不是终端节点，至少右 2 棵子树</li>
+                <li>除根节点和叶子节点以外，<span>至少拥有 [m/2](向上取整)子树 (至少含有m/2 - 1 个关键值)</span></li>
+                <li>所有的叶子节点都在同一层上</li>
+                <li>备注： </li>
+                <li>
+                    <ul>
+                        <li>B 树的长高方式是向上生长的， 二叉树的长高方式是向下生长的</li>
+                        <li>除根节点和叶子节点以外，最多能够拥有 m 个子节点（最多拥有 m - 1 个关键字）</li>
+                        <li>这一条控制了B树的向上分裂的条件</li>
+                        <li>除根节点和叶子节点以外， 至少拥有 m/2 向上取整棵子树 （至少含有 m/2向上取整 - 1个关键字）</li>
+                        <li>这一条控制了B树的删除判断条件</li>
+                    </ul>
+                </li>
+                 
+            </ul>
+            <ul>
+                <li>节点分裂的原则</li>
+                <ul>
+                    <li>除根节点意外 每一个节点最多拥有 m 个子节点[m-1 个关键字] 超过这个范围就分裂</li>
+                    <li>3阶B树 的关键值数量范围是 1 ~ 2</li>
+                    <li>4阶B树 的关键值数量范围是 1 ~ 3</li>
+                    <li>5阶B树 的关键值数量范围是 2 ~ 4</li>
+                </ul>
+                <li>节点分裂的方法</li>
+                <ul>
+                    <li>取当前关键值数组中的个数 / 2 向上取整 === n</li>
+                    <li>节点关键值数组中 n-1 的索引位置的值作为新的节点</li>
+                    <li>剩下的左右两两边的关键值，组为新节点的子节点</li>
+                    <li>实例</li>
+                    <li>
+                        <ul>
+                            <li>3阶B树</li>
+                            <ul>
+                                <li>一旦关键值数组中有三个值就开始分裂</li>
+                                <li>把关键值数组的index === 1 （ 3/ 2 向上取整 = 2 - 1） 的值作为新的节点</li>
+                                <li>index === 0 节点和 index === 2 的节点作为新节点的子节点</li>
+                            </ul>
+                            <li>4阶B数</li>
+                            <ul>
+                                <li>一旦关键值数组中有4个值就开始分裂</li>
+                                <li>把关键值数组中的 index === 1 （4/2向上取整 = 2 - 1） 的值作为新的节点</li>
+                                <li>把index === 0 关键值作为 新节点的左子节点</li>
+                                <li>把index === 2 index === 3 的关键值 作为新界定啊的右子节点</li>
+                            </ul>
+                        </ul>
+                    </li>
+                </ul>
+            </ul>
+        </ul>
+    </ul>
+    <h3>3阶B树的创建实例： </h3>
+    <div class="container"></div>
+    <script>
+        // 3阶B数的实例
+
+        class ThirdOrderBTreeNode{
+            // 关键字
+            // 如果操作的值
+            // 小于关键字 < 子树的index === 关键字的index
+            // 大于关键字 > 子树的index === 关键字的index+1
+            // [10,20]
+            // [5, 15, 25]
+            value1 = null
+            value2 = null
+         
+            // 子树
+            child1 = null
+            child2 = null
+            child3 = null
+
+            // 定义位置信息
+            positionXRange = {
+                min: 0,
+                max: 0
+            }
+
+            positionYRange= {
+                min: 0,
+                max: 0
+            }
+
+            constructor(value1 = null, value2 = null, child1 = null, child2 = null, child3 = null){
+                this.value1 = value1;
+                this.value2 = value2;
+                this.child1 = child1;
+                this.child2 = child2;
+                this.child3 = child3;
+            }
+        }
+
+        class ThirdOrderBTree{
+            root;
+            // 最大数量的关键字个数
+            maximumQuantityKey = 3 - 1
+
+            // 最小数量的关键字个数
+            minimumQuayntityKey = Math.ceil(3/2) - 1
+
+            constructor(root = null){
+                this.root = root;
+            }
+
+            // 插入必须从叶子节点开始插入
+            // 插入设计思路
+            // 把root的插入独立出来
+            // 其他的递归处理
+            // 每次诋毁返回一个对象，属性root 用来判断是否有需要提升的关键值
+            // 属性 node 永安里保存提升后的生成阶段 or 作为参数被传递进去修改后的node
+            add(v){
+                if(!this.root){
+                    this.root = new ThirdOrderBTreeNode(v)
+                }else{
+                    this.rootAdd(v)
+                }
+            }
+            rootAdd(v){
+                if(this.root.child1 === null && this.root.child2 === null && this.root.child2 === null){
+                    // 根节点也是叶子节点
+                    if(this.root.value2 === null){
+                        // 还只有一个关键字
+                        if(this.root.value1 < v){
+                            this.root.value2 = v
+                        }else{
+                            this.root.value2 = this.root.value1;
+                            this.root.value1 = v
+                        }
+                    }else{
+                        // 已经有了两个关键字
+                        if(v < this.root.value1){
+                            // 把value 插入在最左边 提升 value1
+                            
+                            const child1 = new ThirdOrderBTreeNode(v) 
+                            const child2 = new ThirdOrderBTreeNode(this.root.value2) 
+                            this.root = new ThirdOrderBTreeNode(this.root.value1, null, child1, child2)
+                           
+                        }else if(this.root.value1 < v && v < this.root.value2){
+                            // 把value 插入在中间 提升新插入的value
+                            const child1 =  new ThirdOrderBTreeNode(this.root.value1) 
+                            const child2 = new ThirdOrderBTreeNode(this.root.value2)
+                            this.root = new ThirdOrderBTreeNode(v, null, child1, child2)
+                          
+                        }else {
+                            // 把value 插入在右边 提升value2
+                            const child1 =  new ThirdOrderBTreeNode(this.root.value1) 
+                            const child2 = new ThirdOrderBTreeNode(v) 
+                            this.root = new ThirdOrderBTreeNode(this.root.value2, null, child1, child2)
+                        }
+                    }
+                }else {
+                    // 根节点不是叶子节点
+                    if(v < this.root.value1){
+                        const temp = this.addProcess(v, this.root.child1)
+
+                        if(temp.root === null){
+                            // 不需要提升
+                            this.root.child1 = temp.node
+                        }else{
+
+                            if(this.root.value2 === null){
+                                this.root.value2 = this.root.value1;
+                                this.root.child3 = this.root.child2;
+                                this.root.value1 = temp.root;
+                                this.root.child1 = temp.node.left;
+                                this.root.child2 = temp.node.right;
+                            }else{
+                                const left = new ThirdOrderBTreeNode(temp.root)
+                                left.child1 = temp.node.left;
+                                left.child2 = temp.node.right;
+
+                                const right = new ThirdOrderBTreeNode(this.root.value2)
+                                right.child1 = this.root.child2;
+                                right.child2  = this.root.child3;
+
+                                // 需要提升
+                                this.root = new ThirdOrderBTreeNode(
+                                    this.root.value1, 
+                                    null,
+                                    left,
+                                    right
+                                )
+                            }
+                        }
+
+                    }else if(
+                        this.root.value1 < v && this.root.value2 === null 
+                        || this.root.value1 < v && v < this.root.value2
+                    ){
+                        const temp = this.addProcess(v, this.root.child2)
+
+                        if(temp.root === null){
+                            // 不需要提升
+                            this.root.child2 = temp.node
+                        }else{
+                            if(this.root.value2 === null){
+                                this.root.value2 = temp.root;
+                                this.root.child2 = temp.node.left;
+                                this.root.child3 = temp.node.right;
+                            }else{
+                                // 需要提升
+                                const left = new ThirdOrderBTreeNode(this.root.value1)
+                                left.child1 = this.root.child1;
+                                left.child2 = temp.node.left;
+
+                                const right = new ThirdOrderBTreeNode(this.root.value2)
+                                right.child1 = temp.node.right;
+                                right.child2  = this.root.child3;
+
+                                // 需要提升
+                                this.root = new ThirdOrderBTreeNode(
+                                    temp.root, 
+                                    null,
+                                    left,
+                                    right
+                                )
+                            }
+                        }
+                    }else{
+                        const temp = this.addProcess(v, this.root.child3)
+
+                        if(temp.root === null){
+                            // 不需要提升
+                            this.root.child3 = temp.node
+                        }else{
+                            // 需要提升
+                            const left = new ThirdOrderBTreeNode(this.root.value1)
+                            left.child1 = this.root.child1;
+                            left.child2 = this.root.child2;
+
+                            const right = new ThirdOrderBTreeNode(temp.root)
+                            right.child1 = temp.node.left;
+                            right.child2  = temp.node.right;
+
+                            // 需要提升
+                            this.root = new ThirdOrderBTreeNode(
+                                this.root.value2, 
+                                null,
+                                left,
+                                right
+                            )
+                        }
+                    }
+                }
+            }
+            addProcess(v, node){
+                if(node.child1 === null && node.child2 === null && node.child3 === null){
+                    // 叶子节点
+                    if(node.value2 === null){
+                        // 不需要提升任何关键值
+                        if(v < node.value1){
+                            node.value2 = node.value1;
+                            node.value1 = v
+                        }else{
+                            node.value2 = v
+                        }
+                        return {
+                            root: null,
+                            node: node
+                        }
+
+                    }else{
+                        // 需要提升一个关键值
+
+                        if(v < node.value1){
+                            return {
+                                root: node.value1,
+                                node: {
+                                    left: new ThirdOrderBTreeNode(v),
+                                    right: new ThirdOrderBTreeNode(node.value2)
+                                }
+                            }
+                        }else if( node.value1 < v && v < node.value2){
+                            return {
+                                root: v,
+                                node: {
+                                    left: new ThirdOrderBTreeNode(node.value1),
+                                    right: new ThirdOrderBTreeNode(node.value2)
+                                }
+                            }
+
+                        }else if(node.value2 < v){
+                            console.error('需要提升的叶子节点： ', node.value2)
+                            return {
+                                root: node.value2,
+                                node: {
+                                    left: new ThirdOrderBTreeNode(node.value1),
+                                    right: new ThirdOrderBTreeNode(v)
+                                }
+                            }
+                        }
+
+                    }
+                }else{
+                    // 不是叶子节点
+                    if( v < node.value1){
+                        const temp = this.addProcess(v, node.child1)
+                        if(temp.root === null){
+                            node.child1 = temp.node;
+                            return {
+                                root: null,
+                                node: node
+                            }
+                        }else{
+                            if(node.value2 === null){
+                                // 表示node中没有需要提升的关键字
+                                node.value2 = node.value1
+                                node.value1 = temp.root;
+                                node.child3 = node.child2;
+                                node.child1 = temp.node.left;
+                                node.child2 = temp.node.right
+                                return {
+                                    root: null,
+                                    node: node
+                                }
+
+                            }else{
+                                const left = new ThirdOrderBTreeNode(temp.root)
+                                left.child1 = temp.node.left;
+                                left.child2 = temp.node.right;
+                                const right = new ThirdOrderBTreeNode(node.value2)
+                                right.child1 = node.child2;
+                                right.child2 = node.child3
+                                // 表示需要提升
+                                return {
+                                    root: node.value1,
+                                    node: {
+                                        left: left,
+                                        right: right
+                                    }
+                                }
+                            }
+                        }
+                    }else if( 
+                        node.value1 < v && node.value2 === null
+                        || node.value1 < v && v < node.value2
+                    ){
+                        const temp = this.addProcess(v, node.child2)
+
+                        if(temp.root === null){
+                            //  没有提升
+                            node.child2 = temp.node
+                            return {
+                                root: null,
+                                node: node
+                            }
+
+                        }else{
+                            // 有提升
+                            if(node.value2 === null){
+                                // 表示node 中不需要再次提升
+                                node.value2 = temp.root;
+                                node.child2 = temp.node.left;
+                                node.child3 = temp.node.right;
+                                return {
+                                    root: null,
+                                    node: node
+                                }
+                            }else{
+                                const left = new ThirdOrderBTreeNode(node.value1)
+                                left.child1 = node.child1;
+                                left.child2 = temp.node.left;
+
+                                const right = new ThirdOrderBTreeNode(node.value2)
+                                right.child1 = temp.node.right;
+                                right.child2 = node.child3
+
+                                return {
+                                    root: temp.root,
+                                    node: {
+                                        left : left,
+                                        right: right
+                                    }
+                                }
+                            }
+                        }
+                    }else{
+                        const temp = this.addProcess(v, node.child3)
+                        if(temp.root === null){
+                            //  没有提升
+                            node.child3 = temp.node
+                            return {
+                                root: null,
+                                node: node
+                            }
+
+                        }else{
+                            // 有提升
+                            const left = new ThirdOrderBTreeNode(node.value1)
+                            left.child1 = node.child1;
+                            left.child2 = node.child2;
+
+                            const right = new ThirdOrderBTreeNode(temp.root)
+                            right.child1 = temp.node.left;
+                            right.child2 = temp.node.right;
+                            return {
+                                root: node.value2,
+                                node: {
+                                    left : left,
+                                    right: right
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+            }
+
+            getHeight(node){
+                if(!node){
+                    console.log('ndoe -1: ', node)
+                    return -1;
+                }else{
+                    if(node.child1 !== null){
+                        return this.getHeight(node.child1) + 1;
+                    }else if(node.child2 !== null){
+                        return this.getHeight(node.child2) + 1;
+                    }else if(node.child3 !== null){
+                        return this.getHeight(node.child3) + 1;
+                    }else{
+                        return 0
+                    }
+
+                }
+            }
+
+            getLeafCellQuantity(){
+
+            }
+
+            // 绘制canvas
+            // 绘制规则
+            //      每一个关键字和指针域都独立占有一个方块
+
+            // 方块的尺寸
+            cellSize = 20;
+
+            // 行高
+            rowHeight = 60;
+
+            // 叶子节点的起点位置
+            drawLeafLeftPositionX=10
+
+            treeHeight = 0;
+
+            draw(){
+                this.drawLeafLeftPositionX=10
+                this.treeHeight = this.getHeight(this.root) + 1
+                const _canvas_ = document.createElement('canvas')
+                _canvas_.height = this.rowHeight * this.treeHeight + 100
+                _canvas_.width = 3000;
+                this.ctx = _canvas_.getContext('2d') 
+                this.ctx.textAlign = "center"
+                this.ctx.textBaseline = "middle"
+                // document.body.appendChild(_canvas_)
+                document.querySelector('.container').appendChild(_canvas_)
+                // 首先确定 canvas 的高度和宽度
+                // 根据 树的高度 决定canvas height
+                // 根据 叶子节点关键字和指针的总数量 决定 canvas width
+                // 先绘制关键字图案
+                // 在想办法连接
+
+                this.drawProcess(this.root)
+                
+            }
+            drawProcess(node){
+                // 绘制图案的方法
+                // 叶子节点的绘制
+                //      从最左边开始绘制， 根据起始的 X 轴位置开始
+                //      每次绘制完成后 更新 X 轴的位置
+                // 非叶子节点的绘制
+                //      采用后续遍历的方式 首先绘制左侧子节点，然后绘制右侧子节点
+                //      根节点根据左侧子节点的最左侧 点 和右侧子节点的最右侧点 之间居中绘制
+                //      所以draw（） 方法必须要返回 x 轴的位置信息
+
+                let deep = this.treeHeight - this.getHeight(node)
+                let positionY = this.rowHeight * deep ;
+                if(node.child1 === null && node.child2 === null && node.child3 === null){
+                    let startPositionX = this.drawLeafLeftPositionX;
+                    // 绘制叶子节点
+                    if(node.value1 !== null){
+                        // 绘制 子树指针域
+                        this.ctx.strokeRect(
+                            this.drawLeafLeftPositionX, 
+                            positionY, 
+                            this.cellSize, 
+                            this.cellSize
+                        )
+                        this.drawLeafLeftPositionX+=this.cellSize
+                        // 绘制值
+                        this.ctx.strokeRect(
+                            this.drawLeafLeftPositionX,
+                            positionY, 
+                            this.cellSize, 
+                            this.cellSize
+                        )
+                        this.ctx.fillText(
+                            node.value1, 
+                            this.drawLeafLeftPositionX + this.cellSize / 2, 
+                            positionY + this.cellSize / 2
+                        )
+                        this.drawLeafLeftPositionX+=this.cellSize
+                        // 绘制 子树指针域
+                        this.ctx.strokeRect(
+                            this.drawLeafLeftPositionX, 
+                            positionY, 
+                            this.cellSize, 
+                            this.cellSize
+                        )
+                        this.drawLeafLeftPositionX+=this.cellSize;
+                         
+                    } 
+
+                    if(node.value2 !== null){
+                        // 绘制值
+                        this.ctx.strokeRect(
+                            this.drawLeafLeftPositionX, 
+                            positionY, 
+                            this.cellSize, 
+                            this.cellSize
+                        )
+                        this.ctx.fillText(
+                            node.value2, 
+                            this.drawLeafLeftPositionX + this.cellSize / 2, 
+                            positionY + this.cellSize / 2
+                        )
+                        this.drawLeafLeftPositionX+=this.cellSize
+                        // 绘制 子树指针域
+                        this.ctx.strokeRect(
+                            this.drawLeafLeftPositionX, 
+                            positionY, 
+                            this.cellSize, 
+                            this.cellSize
+                        )
+                        this.drawLeafLeftPositionX+=this.cellSize
+                    }
+                    let endPositionX = this.drawLeafLeftPositionX
+
+                    // 添加以位置属性
+                    node.positionXRange = {
+                        min: startPositionX,
+                        max: endPositionX
+                    }
+
+                    node.positionYRange = {
+                        min: positionY,
+                        max: positionY + this.cellSize
+                    }
+
+                    // 添加 node 之间的间隔
+                    this.drawLeafLeftPositionX+=this.cellSize;
+
+                }else{
+                    // 绘制子节点
+                    node.child1 && this.drawProcess(node.child1);
+                    node.child2 && this.drawProcess(node.child2);
+                    node.child3 && this.drawProcess(node.child3);
+                    console.log('绘制子节点： ', node)
+                    // 绘制当前节点
+                    const positionXRange = {
+                        min: Math.min(
+                            node.child1 ? node.child1.positionXRange.min : Infinity,
+                            node.child2 ? node.child2.positionXRange.min : Infinity,
+                            node.child3 ? node.child3.positionXRange.min : Infinity 
+                        ),
+                        max: Math.max(
+                            node.child1 ? node.child1.positionXRange.max : -Infinity,
+                            node.child2 ? node.child2.positionXRange.max : -Infinity,
+                            node.child3 ? node.child3.positionXRange.max : -Infinity 
+                        )
+                    }
+                    node.positionXRange = positionXRange
+                    node.positionYRange = {
+                        min: positionY,
+                        max: positionY + this.cellSize
+                    }
+            
+                    const center = (positionXRange.max + positionXRange.min) / 2;
+                 
+                    let len = 0;
+                    node.value1 !== null && len++;
+                    node.value2 !== null && len++;
+                    const nodeWidth = (len * 2 + 1) * this.cellSize
+                    let startX = center - (nodeWidth / 2)
+                
+                    if(node.value1){
+                        this.ctx.beginPath()
+                        // 绘制child1指针域
+                        this.ctx.strokeRect(
+                            startX, 
+                            positionY, 
+                            this.cellSize, 
+                            this.cellSize
+                        )
+                        startX+=this.cellSize
+
+                        // 绘制指向线条
+                        this.ctx.moveTo(startX - this.cellSize / 2 , positionY + this.cellSize)
+                        this.ctx.lineTo(
+                            (node.child1.positionXRange.min + node.child1.positionXRange.max ) /2, 
+                            node.child1.positionYRange.min 
+                        )
+                        this.ctx.stroke()
+
+                        // 绘制 value1
+                        this.ctx.strokeRect(
+                            startX, 
+                            positionY, 
+                            this.cellSize, 
+                            this.cellSize
+                        )
+                        this.ctx.fillText(node.value1, startX + this.cellSize / 2, positionY + this.cellSize / 2)
+                        startX+=this.cellSize
+                        
+                        // 绘制child2的指针域
+                        this.ctx.strokeRect(
+                            startX , 
+                            positionY, 
+                            this.cellSize, 
+                            this.cellSize
+                        )
+                        // 绘制child2的执政域指向线条
+                        this.ctx.beginPath()
+                        this.ctx.moveTo(
+                            startX + this.cellSize / 2,
+                            positionY + this.cellSize)
+                        this.ctx.lineTo(
+                            (node.child2.positionXRange.min + node.child2.positionXRange.max ) /2, 
+                            node.child2.positionYRange.min 
+                        )
+                        this.ctx.stroke()
+                        startX+=this.cellSize
+                    }
+
+                    if(node.value2){
+                        this.ctx.fillText(node.value2, startX + this.cellSize / 2, positionY + this.cellSize / 2)
+                        this.ctx.strokeRect(startX, positionY, this.cellSize, this.cellSize)
+                        startX+=this.cellSize
+                        this.ctx.strokeRect(startX, positionY, this.cellSize, this.cellSize)
+                        this.ctx.beginPath()
+                        this.ctx.moveTo(startX + this.cellSize / 2 , positionY + this.cellSize)
+                        this.ctx.lineTo((node.child3.positionXRange.min + node.child3.positionXRange.max ) /2, node.child3.positionYRange.min )
+                        this.ctx.stroke()
+                    }
+                }
+            }
+        }
+        
+       
+
+
+
+        const thirdOrderBTree =new ThirdOrderBTree()
+        let keyValue = 0
+        // // 测试1
+        // for(let i = 0; i< 50; i++){
+        //     keyValue++
+        //     thirdOrderBTree.add(keyValue)
+        // }
+        // thirdOrderBTree.draw()
+
+        // // 测试2 从大到小添加
+        // keyValue = 50
+        // for(let i = 50; i > 0; i--){
+        //     thirdOrderBTree.add(i)
+        // }
+        // console.log("thirdOrderBTree.add(keyValue): ", thirdOrderBTree.root)
+        // thirdOrderBTree.draw()
+
+        // 测试 混乱添加
+        let a = []
+        for(let i = 1; i<50; i++){
+            a.push(i)
+        }
+        a.sort(() => Math.random() - 0.5)
+
+        a.forEach(item => {
+            thirdOrderBTree.add(item)
+        })
+        console.log("thirdOrderBTree.add(keyValue): ", thirdOrderBTree.root)
+        thirdOrderBTree.draw()
+
+
+        
+         
+
+        
+    </script>
+    <button class='add'>add</button>
+    <button class="increment">increment</button>
+    <script>
+        const _add_ = document.querySelector('.add');
+        const _increment_ = document.querySelector('.increment');
+
+        _increment_.addEventListener('click', () => {
+            keyValue++;
+            thirdOrderBTree.add(keyValue)
+            thirdOrderBTree.draw()
+        })
+    </script>
+</body>
+</html>
+
+<!-- 
+
+
+
+ 
+
+ -->
