@@ -293,4 +293,47 @@ export {
     largeScaleRandomTest
 }
 
+
+/**
+ * 
+ 
+class RBTree{
+    ……
+    lRotate(datumPointNode){
+        // 把基准节点的左子节点作为 新父节点保存
+        const newParentNode = datumPointNode.right
+
+        // 基准节点没有有子节点 抛出错误
+        if(newParentNode === null){
+            throw new Error("[右旋错误]： 基准节点的左子节点===null")
+        }
+
+        // 更新 基准节点的右子节点
+        datumPointNode.right = newParentNode.left;
+        datumPointNode.right ?  datumPointNode.right.parent =  datumPointNode: "";
+
+        // 更新 新父节点的父节点指针
+        newParentNode.parent = datumPointNode.parent
+        // 基准节点的父节点 === null 表示基准节点是 root
+        if(datumPointNode.parent === null){
+            this.root = newParentNode;
+        }else if(datumPointNode === datumPointNode.parent.right){
+            datumPointNode.parent.right = newParentNode
+        }else if(datumPointNode === datumPointNode.parent.left){
+            datumPointNode.parent.left = newParentNode
+        }
+
+        // 更新 基准节点的父节点指针
+        datumPointNode.parent = newParentNode
+        newParentNode.left = datumPointNode
+    }
+    ……
+}
+
+
+
+
+
+
+ */
  

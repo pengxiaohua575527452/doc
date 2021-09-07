@@ -14,6 +14,14 @@
         import { testAllInsertOperation, largeScaleRandomTest } from "./typescript/rbtree_test_all_type_insert_operation.js"
         import { testFnIsRBTree } from "./typescript/rbtree_test_fn_isRBTree.js"
         import { testAllDelOperation, largeScaleRandomTest as largeScaleRandomTestRemoveNode } from "./typescript/rbtree_test_all_type_del_operation.js"
+        import { 
+            testAllInsertOperation as testAllInsertOperationV2,
+            largeScaleRandomTest as largeScaleRandomTestV2
+        } from "./typescript/rbtree_test_all_type_insert_operation_rbtree_v2.js"
+        import { 
+            testAllDelOperation as testAllDelOperationV2, 
+            largeScaleRandomTest as largeScaleRandomTestRemoveNodeV2 
+        } from "./typescript/rbtree_test_all_type_del_operation_rbtree_v2.js"
         // 测试全部类型的插入操作
         // testAllInsertOperation()
         
@@ -28,9 +36,20 @@
         // testAllDelOperation()
 
         // 大规模测试删除
-        largeScaleRandomTestRemoveNode()
-       
-       
+        // largeScaleRandomTestRemoveNode()
+
+
+        // 测试全部类型的插入操作 v2
+        // testAllInsertOperationV2()
+
+        // 大规模的测试插入节点操作 v2
+        // largeScaleRandomTestV2()
+
+        // 测试全部类型的删除操作 v2
+        // testAllDelOperationV2()
+
+        // 大规模测试删除 v2
+        largeScaleRandomTestRemoveNodeV2()
        
     </script>
 </body>

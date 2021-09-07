@@ -38,7 +38,7 @@ class RBTree {
     rRotate(node) {
         let t = node.left;
         if (t === null) {
-            return node;
+            throw new Error('');
         }
         node.left = t.right;
         if (t.right !== null) {
