@@ -1,0 +1,58 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 数据结构栈
+
+class Stack {
+    // 数组保存栈
+    data = [];
+
+
+    constructor(){}
+
+    // 向栈中添加数据
+    push(value){
+        this.data.unshift(value);
+        return this
+    }
+
+    // 从栈中取出数据
+    pop(){
+        const d = this.data[0]
+        this.data.shift()
+        return d
+    }
+
+    size(){
+        return this.data.length;
+    }
+}
+
+        const stack = new Stack();
+
+        const arr = [100,200,300,12,10,5,3]
+
+        arr.forEach((n) => {
+            stack.push(n)
+        })
+
+        console.log("statck.data: ", stack.data)
+        const len = stack.size()
+
+        let del = []
+        for(let i = 0; i < len; i++){
+            del.push(stack.pop())
+        }
+
+        console.log('del: ', del)
+        
+
+    </script>
+</body>
+</html>
