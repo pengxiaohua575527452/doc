@@ -1,0 +1,516 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 关键词
+        // graph 图
+        // vertiex 顶点 vertices
+        // edge 边  edges
+        // undirected graph 无向图 双向图
+        // graph 有向图 单向图
+        // unweighted 无权重图 每个边的权重相同
+        // weighted graph 有权重图 每个边的权重不同
+        // adjacency list 邻接表 邻接表
+        // adjacency matrix 邻接矩阵
+       
+
+        // 无向无权图
+        // undirected unweighted graph
+
+        // 路径可以表示为节点的序列
+        // 路径可以表示为边的序列
+
+        // simple path 简单路径
+        // 概念
+        // 路劲上没有重复节点
+
+        // shortest path 最短路径 
+
+        // 单元最短路问题
+        // 从一个节点到全部其他节点的最短路径
+
+
+        
+
+
+
+
+
+
+
+
+// 实例1
+
+class Queue{
+    data = []
+
+    constructor(){
+
+    }
+    // 入队
+    enqueue(item){
+        this.data.push(item)
+    }
+
+    // 出队
+    dequeue(){
+        return this.data.shift()
+    }
+
+    // 队列的长度
+    size(){
+        return this.data.length;
+    }
+
+    // 返回队列内容的字符串
+    toString(){
+        let str = "";
+        this.data.forEach(item => {
+            str += `${item} -> `
+        })
+
+        str = str.slice(0, -3)
+        return str
+    }
+
+    isEmpty(){
+        return this.data.length === 0
+    }
+}
+
+
+
+
+
+
+
+        // // 无权无向图的数据结构
+
+        // // 有向无权图最短路
+        // // 最短路径算法
+        // class Graph{
+        //     vertices = [];
+        //     adjacencyList = new Map() // 字典 储存非相同键名的值
+
+        //     // 添加顶点
+        //     addVertex(v){
+        //         this.vertices.push(v)
+        //         this.adjacencyList.set(v, [])
+        //     }
+
+        //     // 通过把顶点添加到匹配的邻接表中实现
+        //     addEdge(v, w){
+        //         this.adjacencyList.get(v).push(w);
+        //     }
+
+        //     // 把图转化成能够打印在 控制台的字符串
+        //     toString(){
+        //        let str = ""
+        //        this.vertices.forEach(vertex => {
+        //            let edge = "["
+        //            this.adjacencyList.get(vertex).forEach(edgeVertex => {
+        //                edge += ` ${edgeVertex}`
+        //            })
+        //            edge += "]"
+        //            str += `${vertex} => ${edge} \n`
+        //        })
+        //        return str 
+        //     }
+        // }
+
+
+        // // 测试
+        // const vertices = ["v1", "v2","v3","v4","v5","v6","v7"]
+        // const edges = [
+        //     ["v1","v2"],
+        //     ["v1","v4"],
+        //     ["v2","v4"],
+        //     ["v2","v5"],
+        //     ["v3","v6"],
+        //     ["v3","v1"],
+        //     ["v4","v3"],
+        //     ["v4","v5"],
+        //     ["v4","v6"],
+        //     ["v4","v7"],
+        //     ["v5","v7"],
+        //     ["v7","v6"],
+        // ]
+        // const graph = new Graph()
+
+        // // 没有访问过 在被添加到队列之前
+        // const WHITE = 'white' 
+        // // 已经添加到队列中但是还没有处理
+        // const BLACK = 'black'
+        // // 已经完成操作
+        // const GREY = 'grey'
+        
+        // // bfs 单元最短路径问题
+        // // 距离对象
+        // let d = {} 
+        // // 简单路径的前一个对象
+        // let pre = {}
+        // // 路径状态
+        // let color = {}
+
+        // // 把全部的顶点都添加到图中
+        // vertices.forEach(vertex => {
+        //     graph.addVertex(vertex)
+        //     color[vertex] = WHITE;
+        //     d[vertex] = 0
+        //     pre[vertex] = null
+        // })
+
+        // // 全部路径
+        // edges.forEach(edge => {
+        //     graph.addEdge(...edge)
+        // })
+
+        // let str = graph.toString()
+        // console.log(str)
+
+        // // 单元最短路径问题
+        // let queue = new Queue()
+        // let s = "v3"
+        // // 路径的起点
+        // queue.enqueue(s)
+        // d[s] = 0
+        // console.log(queue.isEmpty())
+        // while(!queue.isEmpty()){
+        //     const currentVertex = queue.dequeue()
+        //     const neighbors = graph.adjacencyList.get(currentVertex)
+        //     color[currentVertex] = GREY
+        //     neighbors.forEach( vertex => {
+        //         if(color[vertex] === WHITE){ // 还没有被插入队列中
+        //             d[vertex] = d[currentVertex] + 1;
+        //             pre[vertex] = currentVertex;
+        //             color[vertex] = GREY
+        //             queue.enqueue(vertex)
+        //         }
+        //         color[vertex] = GREY;
+        //     })
+        //     color[currentVertex] = BLACK
+        // }
+
+        // console.log(d, pre)
+
+        // str = ""
+        // vertices.forEach(vertex => {
+        //     str += `${vertex} ${d[vertex]} ${pre[vertex]}\n`
+        // })
+        // console.log(str)
+
+
+
+       
+        /**
+         * 图的数据结构 有向无权图 - 2
+         * 邻接表表示法
+         * vertices === 图中全部的顶点
+         * adjacencyList === 邻接表
+        */
+
+        // 有向无权表的测试数据
+        const vertices = ["v1", "v2","v3","v4","v5","v6","v7"]
+        const edges = [
+            ["v1","v2"],
+            ["v1","v4"],
+            ["v2","v4"],
+            ["v2","v5"],
+            ["v3","v6"],
+            ["v3","v1"],
+            ["v4","v3"],
+            ["v4","v5"],
+            ["v4","v6"],
+            ["v4","v7"],
+            ["v5","v7"],
+            ["v7","v6"],
+        ]
+        
+        /**
+         * 有向无权图 - 邻接表 - 代码表示2
+        */
+const adjacencyList = {
+    "v1": ["v2", "v4"],
+    "v2": ["v4", "v5"],
+    "v3": ["v1", "v6"],
+    "v4": ["v3", "v5", "v6", "v7"],
+    "v5": ["v7"],
+    "v6": [],
+    'v7': ["v6"]
+}
+
+        /**
+         * 有向无权图 - 邻接表 - 代码表示2
+        */
+        // const adjacencyList = {
+        //     "v1": { "v2": 1, "v4": 1 },
+        //     "v2": { "v4": 1, "v5": 1 },
+        //     "v3": { "v1": 1, "v6": 1 },
+        //     "v4": { "v3": 1, "v5": 1, "v6": 1, "v7": 1 },
+        //     "v5": { "v7": 1 },
+        //     "v6": {},
+        //     'v7': { "v6": 1 }
+        // }  
+
+        // const adjacencyList = {
+        //     "v1": {"v2": 1, "v3": 1, "v4": 1},
+        //     "v2": {"v1": 1, "v4": 1, "v5": 1},
+        //     "v3": {"v1": 1, "v7": 1},
+        //     "v4": {"v1": 1, "v2": 1, "v3": 1},
+        //     "v5": {"v2": 1, "v4": 1},
+        //     "v6": {},
+        //     'v7': {"v3": 1}
+        // }
+
+
+
+class DirectedUnweightedGraph{
+    // 图中的全部顶点
+    vertices = [] 
+
+    // 邻接表
+    adjacencyList= {}
+
+    // 未发现 === WHITE
+    WHITE = 'white' 
+    // 以发现入队列未处理 === GREY
+    BLACK = 'black'
+    // 以出队列探索完毕 === BLACK
+    GREY = 'grey'
+
+    constructor(){}
+
+    /**
+     * 添加顶点
+     */
+    addVertex(v){
+        this.vertices.push(v)
+        if(this.adjacencyList[v] === undefined){
+            this.adjacencyList[v] = []
+        }
+        return this
+    }
+
+    /**
+     * 向某两个顶点之间添加边
+     * 修改邻接表
+     * 
+    */
+    addEdge(from, to){
+        if(this.adjacencyList[from] === undefined){
+            throw new Error("[添加边错误]： 图中没有指定的出发顶点")
+        }
+        this.adjacencyList[from].push(to)
+        return this
+    }
+
+    /**
+     * 把邻接表转为字符串
+    */
+    toString(){
+        let str = ""
+        for(let v in this.adjacencyList){
+            str += `${v} ->`
+            this.adjacencyList[v].forEach(neighbor => {
+                str += ` ${neighbor}`
+            })
+            str += "\n"
+        }
+        return str;
+    }
+
+    /**
+     * 单源最短路径问题
+     * 从指定的节点开始 到图中每一个节点的最短路径
+     * 因为图示没有权重的所以
+     * 访问顶点的顺序没有特殊要求
+     * 使用普通队列即可
+     */
+    singleSourceShortestPathProblem(source = null){
+        if(source === null){
+            throw new Error('[错误]：没有指定的源顶点')
+        }else if(this.adjacencyList[source] === undefined){
+            throw new Error('[错误]：图中没有匹配的源顶点')
+        }
+
+        // 普通队列
+        const q = new Queue()
+        
+        // 顶点状态 
+        // 未发现 === WHITE
+        // 以发现入队列未处理 === GREY
+        // 以出队列探索完毕 === BLACK
+        const status = {}
+        const dist = {}
+        const path = {}
+        this.vertices.forEach(vertex => {
+            status[vertex] = this.WHITE;
+            dist[vertex] = Infinity;
+            path[vertex] = null;
+        })
+
+        // 设置源点入队列
+        q.enqueue(source)
+        // 设置源点的距离
+        dist[source] = 0;
+        while(!q.isEmpty()){
+            const currentVertex = q.dequeue()
+            console.log('currentVertex: ', currentVertex)
+            // 开始探索
+            this.adjacencyList[currentVertex].forEach(neighbor => {
+                if(status[neighbor] === this.WHITE){
+                    // 没有发现
+                    q.enqueue(neighbor)
+                    status[neighbor] = this.GREY;
+                    dist[neighbor] = dist[currentVertex] + 1
+                    path[neighbor] = currentVertex;
+                } 
+            })
+            status[currentVertex] = this.BLACK;
+        }
+
+        // 合并结果数据
+        const result = []
+        this.vertices.forEach(vertex => {
+            result.push([
+                vertex,
+                dist[vertex],
+                path[vertex]
+            ])
+        })
+
+        return result;
+    }
+    
+}
+
+const directedUnweightedGraph = new DirectedUnweightedGraph()
+/**
+ * 向图中添加顶点
+*/
+for(let v in adjacencyList){
+    if(directedUnweightedGraph.vertices[v] !== undefined){
+        throw new Error("[错误]：图中已经有了相同的顶点")
+    }
+    directedUnweightedGraph.addVertex(v)
+    adjacencyList[v].forEach(neighbor => {
+        if(directedUnweightedGraph.adjacencyList[v].includes(neighbor)){
+            throw new Error("[错误]：添加的边已经存在")
+        }
+        directedUnweightedGraph.addEdge(v, neighbor)
+    })
+}
+// 打印图的邻接表效果
+console.log(directedUnweightedGraph.toString())
+
+// 单源最短路径问题
+console.log(directedUnweightedGraph.singleSourceShortestPathProblem("v3"))
+
+        
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /**
+         * 图的数据结构 有向有权图 - 3
+         * 邻接表表示法
+         * vertices === 图中全部的顶点
+         * adjacencyList === 邻接表
+        */
+
+        /**
+         * 有向无权图 - 邻接表
+        */
+        // const adjacencyList = {
+        //     "v1": { "v3": 100, "v2": 1},
+        //     "v2":  ,
+        //     "v3":  ,
+        //     "v4":  ,
+        //     "v5":  ,
+        //     "v6":  ,
+        //     'v7':  
+        // }
+        
+
+    </script>
+</body>
+</html>
+
+
+ 
+ 
+
+ 
+
+ 

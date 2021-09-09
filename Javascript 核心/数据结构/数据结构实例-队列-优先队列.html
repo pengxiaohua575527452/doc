@@ -1,0 +1,240 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+// 优先队列
+// 类似插队
+// 按一定的条件排序，顺序在前的先出
+// 一般权重使用 数字替代
+
+
+
+/**
+ * 用链表表示的优先队列
+*/
+
+
+// 优先队列节点
+class PriorityQueueNode {
+    pre = null
+    next = null;
+    key
+    data
+    constructor(key=null,data=null){
+        this.key = key;
+        this.data = data;
+    }
+}
+
+
+// 优先队列
+// 关键值小的在前面
+class PriorityQueue{
+    head = null;
+    size = 0
+
+    constructor(head = null){
+        this.head = head;
+    }
+
+    enqueue(node = null){
+
+        if(node === null){
+            throw new Error('[错误] null 不能够进入队列')
+        }
+
+        if(node.constructor !== PriorityQueueNode){
+            throw new Error('[错误] 进入队列的对象必须是 PriorityQueueNode 的实例')
+        }
+
+        if(this.head === null){
+            this.head = node
+        }else{
+            let currentNode = this.head;
+            let pre = currentNode.pre
+            while(currentNode !== null && currentNode.key < node.key){
+                pre = currentNode;
+                currentNode = currentNode.next;
+            }
+            
+            if(pre === null){
+                this.head = node;
+            }else{
+                pre.next = node;
+                node.pre = pre;
+            }
+
+            node.next = currentNode;
+            if(currentNode !== null){
+                currentNode.pre = node;
+            }
+           
+        }
+
+        this.size++;
+        if(this.head !== null){
+            this.head.pre = null;
+        }
+
+        return this;
+    }
+
+    dequeque(){
+        // 队列已经取出未空
+        if(this.head === null){
+            return null;
+        }
+
+        let t = this.head;
+        this.head = this.head.next
+        if(this.head !== null){
+            this.head.pre = null;
+        }
+        this.size--;
+        return t;
+    }
+
+    isEmpty(){
+        return this.head === null
+    }
+
+    toString(){
+        let currentNode = this.head
+        let str = ""
+        while(currentNode !== null){
+            str += `${currentNode.key} ->`
+            currentNode = currentNode.next;
+        }
+        str = str.slice(0, -2)
+        return str
+    }
+    
+}
+
+/**
+ * 
+ * 判断是否合法的 优先队列
+*/
+function isLegalPriorityQueue(priorityQueue){
+    let pre = priorityQueue.head;
+    let count = 1
+    if(pre !== null){
+        while(pre.next !== null){
+            if(pre.key > pre.next){
+                throw new Error('[错误 非法的优先队列]： 前一项关键值 > 后一项关键值')
+            }
+
+            pre = pre.next
+            count++;
+        }
+    }
+
+    if(count !== priorityQueue.size){
+        throw new Error('[错误 非法的优先队列]： 队列数 ！== size')
+    }
+    return true;
+}
+
+// 基础测试数据
+function baseTest(){
+    // 测试添加
+    const arr = [1,3,5,7,9,2,4,6,8,0]
+    const priorityQueue = new PriorityQueue()
+    arr.forEach(key => {
+        priorityQueue.enqueue(new PriorityQueueNode(key))
+    })
+    console.log(priorityQueue.toString())
+    console.log(isLegalPriorityQueue(priorityQueue))
+
+    // 测试取出
+    try{
+        dequequeTest(priorityQueue)
+        console.log('测试dequeue成功')
+    }catch(err){
+        console.error(err)
+    }
+}
+
+// 测试取出
+// 测试
+function dequequeTest(priorityQueue){
+    let size = priorityQueue.size
+    for(let i = 0;i < size ; i++){
+        const node = priorityQueue.dequeque()
+        if(node === null){
+            throw new Error('[错误 取出的节点 === null]')
+        }
+    }
+
+    if(priorityQueue.head !== null){
+        throw new Error('[错误 没能够完全取出队列')
+    }
+    return true;     
+}
+
+
+baseTest()
+
+
+
+// 大规模测试
+function largeScaleTest(){
+    let a = []
+    let scale = 20000
+    let count = 10
+    let priorityQueue
+    for(let i =0; i< scale; i++){
+        a.push(i)
+    }
+
+    console.log(`开始大规模测试,测试规模 ${scale}, 测试的次数 ${count}`)
+    console.time()
+
+    for(let i = 0; i< count; i++){
+        a.sort(() => Math.random() - 0.5)
+        priorityQueue = new PriorityQueue()
+        // 测试添加
+        try{
+            a.forEach(key => priorityQueue.enqueue(new PriorityQueueNode(key)))
+            isLegalPriorityQueue(priorityQueue)
+        }catch(err){
+            console.error(err)
+            return;
+        }
+
+        // 测试取出
+        try{
+            dequequeTest(priorityQueue)
+        }catch(err){
+            console.error(err)
+            return;
+        }
+    }
+        
+    console.log(`测试完成时间：`)
+    console.timeEnd()
+}
+
+largeScaleTest()
+
+
+
+
+
+
+
+
+        
+
+        
+    </script>
+    
+</body>
+</html>
+
+ 

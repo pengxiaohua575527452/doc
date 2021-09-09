@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        class Person{
+
+            symbolName = Symbol('name')
+            // 私有属性
+            // name
+            constructor(name){
+                this[this.symbolName] = name
+            }
+
+            getName(){
+                return this[this.symbolName]
+            }
+
+            setName(name){
+                this[this.symbolName] = name;
+            }
+
+            
+        }
+
+        const bill = new Person("bill")
+    
+        // try{
+        //     console.log(bill.name)
+        //     bill.name = "update"
+        // }catch(err){
+        //     console.error(err)
+        // }
+        
+        
+        console.log(bill.getName())
+        bill.setName('bill-name')
+        console.log(bill.getName())
+    
+        console.log(bill)
+
+        // 问题
+        // 这个私有属性会被继承
+
+
+        class Student extends Person{
+            constructor(name){
+                super(name)
+            }
+        }
+
+        let jack = new Student('jack')
+        console.log(jack)
+    </script>
+</body>
+</html>

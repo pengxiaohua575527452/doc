@@ -166,27 +166,63 @@
 
         // hello_cn({name: '中文'})
         // hello_en({name: 'EN'})
- 
-
-
-
-
-
-
-
-
-
-
-
 
 
         // 如果 bind 函数的参数列表为空，或者thisArg是null或undefined，执行作用域的 this 将被视为新函数的 thisArg。
-        // 下面的理解有问题 始终指向了 window.name
-        // 这个 执行作用域如何理解？？？？/
         // bind的实参第一个参数如果传递unll or undefined 
         // 【bind返回函数】 this 一定指向 bind()执行时候作用域的this
         // 这个执行作用域到底表示的是什么意思？？
+        // 执行作用域 === 立即执行一个 function 声明的函数的内部的this
+        // 也就是 === 立即执行 function 声明的函数作用域
+        // 可以这么理解 bind() 执行完成之后 会返回一个函数副本
+        // 这个函数副本的执行作用域就新函数的 thisArg
+        // 也就是相当于 === bind() 完成之后立即执行这个函数副本时 内部的this指向
+        // 只不过 把执行放在了后面
+        // 但是this === 在 bind() 执行代码处， 执行一个任意function 声明函数内部的this
+        // 执行作用域可以理解为 在当前代码处立即执行一个任意 function 声明函数所处的作用域；
+        
        
+
+        // class Person {
+        //     constructor(name){
+        //         this.name = name
+        //     }
+        //     getThis(){
+        //         function inside(){
+        //             console.log(this)
+        //         }
+
+        //         // bind() 执行完成后所返回的 副本函数所在的作用域
+        //         return inside.bind()
+        //     }
+        // } 
+
+        // const bill = new Person('bill')
+        // const getThis = bill.getThis();
+       
+        // getThis()
+
+        function fn(){
+            console.log(this)
+        }
+
+        // 应该改指向全局对象
+        // 严格模式时undefined
+        // 非严格模式是 window 对象
+        // fn1内部的this === 在当前执行functin声明函数状态下的this
+        // 也就是 fn1 内部的this === 立即执行 fn() 函数内部的this
+        let fn1 = fn.bind()
+
+        let bill = {
+            name: 'bill',
+            fn: fn1
+        }
+
+        bill.fn()
+        // 预期是
+        // => window
+        // 实际
+        // => window
 
         class Person {
             constructor(name){
@@ -196,49 +232,30 @@
                 function inside(){
                     console.log(this)
                 }
+                
+                // 没有传递参数
+                // 所以返回的副本函数内部的this
+                // 指向了执行作用域的this
+                // 等同于上面的 inside() 调用状态下的执行作用域
+                // 只是把执行放在后面
+                
+                inside()
                 return inside.bind()
             }
         } 
 
-        const bill = new Person('bill')
-
-        const getThis = bill.getThis();
+        const jack = new Person('bill')
+        const getThis = jack.getThis();
+        // 预期输出
+        // => undefined
+        // 实际输出
+        // => undefined
 
         getThis()
-        // 如果 执行作用域的this 表示 bind()这个操作执行时所在的作用域
-        // 预期输出 
-        // => bill
-        // 实际输出 
-        // => undefined 
-        // 表示 getThis 函数内部的this 指向的是 全局的this
-        // 表示 执行作用域的this 并不是 bind()这个操作执行时所在的作用域
-
-        let b = {
-            name: 'b',
-            getThis(){
-                console.log(this)
-                getThis()
-            }
-        }
-
-        b.getThis()
-        // 如果 执行作用域的this 表示 这个函数调用状态下所在作用域的this
-        // 预期输出 
-        // => { name: 'b', getThis: f}
-        // => { name: 'b', getThis: f}
-        // 实际输出
-        // => { name: 'b', getThis: f}
+        // 预期输出
         // => undefined
-        // 表示 getThis() 执行时内部的this 并没有指向执行状态下作用域的this
-
-                
-
-
-
-
-
-        
- 
+        // 实际输出
+        // => undefined
 
        
     </script>

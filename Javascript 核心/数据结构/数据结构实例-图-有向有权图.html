@@ -1,0 +1,451 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        
+        /**
+         * 图的数据结构 有向有权图
+         * 邻接表表示法
+         * vertices === 图中全部的顶点
+         * adjacencyList === 邻接表
+        */
+
+        // 使用优先队列，距离最近的排在队列的前面
+        // 从距离最近的开始遍历
+        // 所有更改了路径的点需要插入到优先队列中处理
+        // 如果对应的点已经在优先路径中了，需要更新优先队列中队对饮点的排序位置
+        // 所以需要在优先队列中查找和移动
+
+        
+        /**
+         * 有向无权图 - 邻接表 表示
+        */
+const adjacencyList = {
+    "v1": {
+        "v2": 2,
+        "v4": 1
+    },
+    "v2": {
+        "v4": 3,
+        "v5": 10
+    },
+    "v3": { 
+        "v1": 4, 
+        "v6": 5
+    },
+    "v4": {
+        "v3": 2, 
+        "v5": 2, 
+        "v6": 8, 
+        "v7": 4 
+    },
+    "v5": {
+        "v7": 1
+    },
+    "v6": {},
+    'v7': {
+        "v6": 1
+    }
+}
+
+
+/**
+ * 优先队列节点
+*/
+class PriorityQueueNode{
+
+    pre = null;
+    next = null;
+    
+    // 保存数据体
+    data = null; 
+    
+    /**
+     * key 队列的优先顺序表示
+     * **/
+    constructor(key = null, data = null){
+        console.log("PriorityQueueNode: ", key, data)
+        if(data === null){
+            throw new Error("[错误 构建优先队列节点的数据体 === null]")
+        }else if(key === null){
+            throw new Error("[错误 构建优先队列节点的关键字 === null]")
+        }
+
+        this.data = data;
+        this.getKey = function(){
+            return key;
+        }
+    }
+}
+
+/**
+ * 优先队列类
+ * 
+*/
+class PriorityQueue {
+    // 使用链表保存
+    head = null;
+    size = 0;
+
+    constructor(){}
+
+    /***
+     * 入队操作
+    */
+    enqueue(node = null){
+        if(node === null || node === undefined){
+            throw new Error("[错误]: 进入队列的数据不能够 === null or undefined")
+        }else if(node.constructor !== PriorityQueueNode){
+            throw new Error("[错误]: 进入队列的数据不是 PriorityQueueNode 类型")
+        }
+
+        if(this.head === null){
+            this.head = node;
+        }else{
+            let currentNode = this.head;
+            let preNode = currentNode.pre;
+
+            while(currentNode !== null && currentNode.key < node.key){
+                preNode = currentNode;
+                currentNode = currentNode.next;
+            }
+
+            node.next = currentNode;
+            currentNode.pre = node;
+            
+
+            if(preNode === null){
+                this.head = node;
+            }else{
+                preNode.next = node;
+                node.pre = preNode;
+            }
+        }
+        this.size++
+        return this;
+    }
+
+    /**
+     * 出对操作
+    */
+    dequeue(){
+        const t = this.head;
+        if(this.head !== null){
+            this.head = this.head.next;
+            this.head !== null ? this.head.pre = null : "";
+            this.size--;
+        }
+        return t;
+    }
+
+    /**
+     * 从队列中删除 节点
+    */
+    removeByNode(node){
+        if(node.pre === null){
+            this.head = node.next;
+        }else if(node.next === null){
+            node.pre.next = null;
+            this.size--;
+        }else{
+            node.pre.next = node.next;
+            node.next.pre = node.pre
+            this.size--;
+        }
+        return this;
+    }
+
+    /**
+     * 从队列中找到节点
+    */
+    findNode(key){
+        if(this.head === null){
+            return null;
+        }
+
+        let currentNode  = this.head;
+        while(currentNode !== null){
+            const currentKey = currentNode.getKey()
+
+            if(currentKey === key){
+                return currentNode
+            }
+
+            // 表示已经超出范围
+            if(currentKey > key){
+                return null;
+            }
+            currentNode = currentNode.next;
+        }
+
+        return currentNode;
+    }
+
+    /**
+     * 检查队列是否为空
+    */
+    isEmpty(){
+        return this.head === null;
+    }
+}
+
+class DirectedWeightedGraph{
+    // 图中的全部顶点
+    vertices = [] 
+
+    // 邻接表
+    adjacencyList= {}
+
+    // 未发现 === WHITE
+    WHITE = 'white' 
+    // 以发现入队列未处理 === GREY
+    BLACK = 'black'
+    // 以出队列探索完毕 === BLACK
+    GREY = 'grey'
+
+    constructor(){}
+
+    /**
+     * 添加顶点
+     */
+    addVertex(v){
+        this.vertices.push(v)
+        if(this.adjacencyList[v] === undefined){
+            this.adjacencyList[v] = {}
+        }
+        return this
+    }
+
+    /**
+     * 向某两个顶点之间添加边
+     * 修改邻接表
+     * 
+    */
+    addEdge(from, to, weight){
+        if(this.adjacencyList[from] === undefined){
+            throw new Error("[添加边错误]： 图中没有指定的出发顶点")
+        }
+        this.adjacencyList[from][to] = weight;
+        return this
+    }
+
+    /**
+     * 把邻接表转为字符串
+    */
+    toString(){
+        let str = ""
+        const endStr = " }\n"
+        for(let v in this.adjacencyList){
+            str += `${v}: {`
+
+            for(let neighbor in this.adjacencyList[v]){
+                const weight = this.adjacencyList[v][neighbor]
+                str += `${neighbor}: ${weight}, `
+            }
+
+            if(Reflect.ownKeys(this.adjacencyList[v]).length !== 0){
+                str = str.slice(0, -2) + endStr
+            }else{
+                str += endStr
+            }
+            
+        }
+        return str;
+    }
+
+    /**
+     * 单源最短路径问题
+     * 从指定的节点开始 到图中每一个节点的最短路径
+     * 使用优先队列遍历全部的节点，优先队列保存距离被更改的节点
+     * 节点的距离被更改了，从更改节点出发的路径需要全部从新算过
+     * 
+     * 从 距离 source 最近的节点开始遍历 可以最大范围内的防止重复计算
+     * 如果有节点 新的距离 < 老的距离
+     * 把这个节点重新放入优先队列中 再一次遍历
+     * 如果节点已经在队列中了， 更新节点在队列中的排序位置
+     */
+    singleSourceShortestPathProblem(source){
+
+        // 优先队列
+        const priorityQueue = new PriorityQueue()
+        const dist = {};
+        const path = {};
+        for(let vertexId in this.adjacencyList){
+            dist[vertexId] = Infinity;
+            path[vertexId] = null;
+        }
+
+        priorityQueue.enqueue(new PriorityQueueNode(0, source))
+        dist[source] = 0;
+        path[source] = null
+        // console.log("priorityQueue.isEmpty(): ", priorityQueue.isEmpty())
+        while(!priorityQueue.isEmpty()){
+            const from = priorityQueue.dequeue().data;
+            const neighbors = this.adjacencyList[from]
+                
+            for(let to in neighbors){
+                const weight = neighbors[to]
+                const newDist = weight + dist[from]
+                if(newDist < dist[to]){
+                    // 查看队列里面是否已经存在
+                    // 已经存在 删除
+                    const oldNode = priorityQueue.findNode(to)
+                    if(oldNode !== null){
+                        priorityQueue.removeByNode(oldNode)
+                    }
+                    
+                    priorityQueue.enqueue(new PriorityQueueNode(newDist, to))
+                    dist[to] = newDist;
+                    path[to] = from;
+                }
+            }
+        }
+
+        // 合并结果
+        const result = {from: source, to: {} }
+        for(let to in this.adjacencyList){
+            result.to[to] = {
+                dist: dist[to],
+                path: path[to]
+            }
+        }
+
+        return result;
+    }
+}
+        
+const directedWeightedGraph = new DirectedWeightedGraph()
+/**
+ * 向图中添加顶点
+*/
+for(let v in adjacencyList){
+    if(directedWeightedGraph.vertices[v] !== undefined){
+        throw new Error("[错误]：图中已经有了相同的顶点")
+    }
+    directedWeightedGraph.addVertex(v)
+
+    for(let neighbor in adjacencyList[v]){
+        if(directedWeightedGraph.adjacencyList[v][neighbor] !== undefined){
+            throw new Error("[错误]：添加的边已经存在")
+        }
+
+        const weight = adjacencyList[v][neighbor]
+        directedWeightedGraph.addEdge(v, neighbor, weight)
+
+    }
+    
+}
+// 打印图的邻接表效果
+console.log(directedWeightedGraph.toString())
+
+// // 单源最短路径问题
+console.log(directedWeightedGraph.singleSourceShortestPathProblem("v3"))
+
+        
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /**
+         * 图的数据结构 有向有权图 - 3
+         * 邻接表表示法
+         * vertices === 图中全部的顶点
+         * adjacencyList === 邻接表
+        */
+
+        /**
+         * 有向无权图 - 邻接表
+        */
+        // const adjacencyList = {
+        //     "v1": { "v3": 100, "v2": 1},
+        //     "v2":  ,
+        //     "v3":  ,
+        //     "v4":  ,
+        //     "v5":  ,
+        //     "v6":  ,
+        //     'v7':  
+        // }
+        
+
+    </script>
+</body>
+</html>
+
+
+ 
+ 
+
+ 
+
+ 

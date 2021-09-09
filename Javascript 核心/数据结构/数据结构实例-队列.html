@@ -53,6 +53,50 @@
             return items.length;
         }
 
+
+        class Queue{
+            data = []
+
+            constructor(){
+
+            }
+            // 入队
+            enqueue(item){
+                this.data.push(item)
+            }
+
+            // 出队
+            dequeue(){
+                return this.data.shift()
+            }
+
+            // 队列的长度
+            size(){
+                return this.data.length;
+            }
+
+            // 返回队列内容的字符串
+            toString(){
+                let str = "";
+                this.data.forEach(item => {
+                    str += `${item} -> `
+                })
+
+                str = str.slice(0, -3)
+                return str
+            }
+        }
+
+
+        const arr = [1,2,3,4,5,6,7,8]
+        const queue = new Queue()
+
+        arr.forEach(item => queue.enqueue(item))
+        console.log(queue.toString())
+        arr.forEach(item => queue.dequeue())
+        console.log(queue)
+        
+
         
     </script>
     
