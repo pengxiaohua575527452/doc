@@ -1,0 +1,110 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<pre>
+JavaScript 引用的概念
+- 一个对象如果有访问另一个对象的权限，就叫做这个对象引用另一个对象
+- 【包括函数的作用域 or 全局词法作用域】
+    - 例如
+        - 一个 JavaScript 对象，对他的原型的引用【隐式的引用】，对他属性的引用【显示的引用】
+    - 函数作用域？？？
+        - 函数执行时
+    - 全局词法作用域
+        - 全局申明的变量【是不会被垃圾回收的】
+
+- 
+
+</pre>
+
+
+
+
+
+
+
+<!-- 
+
+
+
+
+
+
+
+    javascript 垃圾回收机制，主要依据是看变量是否还有被其他
+    地方引用，如果变量被其他地方引用，是不会被销毁的
+    但是如果变量没有被其他地方引用，变量才会被效果
+
+    以上的i虽然循环完成了，但是变量i在congsole.log()中被引用了
+    所以这个变量是不会被销毁的
+
+
+    变量的引用是从根开始的
+
+    setTimeout 微任务 宏任务 汇报需要执行的函数保存在栈中
+
+
+    函数不会被效果，那么韩慧内部的变量也就不会被销毁
+    函数内部的变量只有在函数执行完成后才销毁
+    console.llog(i) 里面的i 在console.log() 函数的内部被引用了
+    console.log 是一个全局对象
+ -->
+
+<script>
+
+// // father,mother 申明了两个变量
+// // 两个变量会引用执行函数传递进来的对象
+// function family(father, mother){
+//     // 两个变量【对象】之间实现了相互引用
+//     mother.husband = mother;
+//     father.wife = mather;
+
+//     // 定义了一个新的对象 
+//     // 对象引用了 变量【对象】 father mother
+//     return {
+//         father: father,
+//         mother: mother
+//     }
+// }
+
+// // 对函数 family 中声明的两个变量赋值
+// // 声明了一个变量 myFamily 实现对函数 family执行结果的引用；
+// let myFamily = family({name: 'my-family-father'}, {name: "my-family-mother"})
+
+// // 上面的代码中 全局对象包括了
+// // family函数
+// // myFamily对象
+
+// // 执行代码
+// myFamily.mother = null;
+// myfamily.father.wife = null;
+
+
+// setInterval(() => {
+//     // 内部的函数引用了 i
+//     // 只有等待这个函数执行完毕之后才会销毁
+// })
+
+// console.log() 
+
+// for (let i = 0; i < 10; i++) {
+//     if (i == 3) {
+//         // setInterval 内部的函数
+//         // setInterval 作为全局函数
+//         setInterval(() => {
+//             console.log(i);
+//         }, 1000)
+//     }
+// }
+
+
+ 
+</script>
+
+</body>
+</html>

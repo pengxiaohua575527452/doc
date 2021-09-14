@@ -483,7 +483,6 @@ class RBTree {
         return this;
     }
 }
-
 /**
  * 检验树是否是一个红黑树
  */
@@ -500,7 +499,6 @@ function isRBTree(tree) {
     // 检查红色节点的父节点不能够是红色的节点/
     // 节点的颜色只能够是黑色or红色
     checkColor(tree.root);
-    
     // 检查 根节点的值 > left && 根节点的值 < right
     checkSequence(tree.root);
 }

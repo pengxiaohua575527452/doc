@@ -1,0 +1,56 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button>点击</button>
+    <script>
+
+        // event.target === document.querySelector('')f
+        // event.target 返回 DOM 对象的引用 [HTMLElement]
+        // document.querySelector() 返回 DOM 对象引用 [HTMLElement]
+        // 都指向相同的内存地址
+
+        const _button_ = document.querySelector('button')
+        document.querySelector('body').addEventListener('click', e => {
+            const target = e.target
+            console.log(e.target)
+            console.log(_button_)
+            console.log(target === _button_)
+            // 输出 true
+        })
+
+
+        // 例如 
+        // 页面上有多个点击按钮
+        // 我们需要为这些点击按钮增加相应的事件
+        // 一般的操作我们是为每一个按钮单独添加一个点击事件
+        // 但是我们同时也可以为按钮的父对象添加一个点击事件
+        // 用父对象的点击事件处理全部按钮的点击事件
+        
+
+
+        
+        const _button_ = document.querySelector('.btn')
+        const _click_ = document.querySelector('.click');
+        _button_.click = function(){
+            console.log('点击')
+        }
+        _click_.click = function(){
+            console.log('click')
+        }
+        // 把事件绑定到父容器上
+        // 直接调用目标对象的方法即可
+    
+        document
+        .querySelector('body')
+        .addEventListener('click', e => {
+            const target = e.target
+            target.click()
+        })
+    </script>
+</body>
+</html>

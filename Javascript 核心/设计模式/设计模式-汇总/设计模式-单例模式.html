@@ -1,0 +1,38 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单例模式</title>
+</head>
+<body>
+    <script>
+        // 单例模式
+        // 一个类只有一个实例对象
+        // 并且在全局提供了访问这个实例的可能
+        // code 实现
+        // 只在第一次创建一个新的对象
+        // 之后的全部创建都是返回第一次创建的对象
+
+
+
+        const Router = (function(){
+            class Router {
+
+            }
+
+            const router =  new Router()
+            return function(){
+                return router
+            }
+          
+        })()
+
+        const router1 = new Router()
+        const router2 = new Router()
+
+        console.log(router1 === router2)
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        <li>
+            <h3>多态的根本作用</h3>
+        </li>
+        <li>
+            通过把过程化的条件分支语句转换为对象的多态性，从而消除条件分支语句
+        </li>
+    </ul>
+    <button class="btn-google" data-map="google">显示地图</button>
+    <button class="btn-baidu" data-map="baidu">显示百度地图</button>
+    <script>
+
+        // 使用场景
+        // A 写架构 需要一个显示地图的方法
+        // B 写具体实现 google 地图显示的方法
+        // C 写具体实现 baidu 地图显示的方法
+
+        // google 对象是b写在其他模块中的
+        const google={
+            show: function(){
+                console.log("google")
+            }
+        }
+
+        // baidu 对象是c写在其他模块中的
+        const baidu = {
+            show: function(){
+                console.log('baidu')
+            }
+        }
+
+
+        // A写的内容 方案1 常规操作
+        // document
+        // .querySelector('.btn-google')
+        // .addEventListener('click', e=> {
+        //     google.show()   
+        // })
+
+        
+        // document
+        // .querySelector('.btn-baidu')
+        // .addEventListener('click', e=> {
+        //     baidu.show()   
+        // })
+
+
+
+        // A写的内容 方案2 使用多态
+
+        const allMap = { google,baidu }
+
+        document
+        .querySelector('body')
+        .addEventListener('click', e => {
+            const show = allMap[e.target.dataset.map] && allMap[e.target.dataset.map].show 
+            show instanceof Function ? show() : "";
+        })
+
+
+
+
+function isType(type){
+    return function(data){
+        return Object.prototype.toString.call(data).slice(8,-1) === type
+    }
+}
+
+const isString = isType("String")
+
+console.log(isString('aaa'))
+
+    </script>
+</body>
+</html>
