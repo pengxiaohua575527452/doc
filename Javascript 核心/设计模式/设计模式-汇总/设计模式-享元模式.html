@@ -1,0 +1,74 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设计模式-享元模式</title>
+</head>
+<body>
+    <script>
+
+        // 业务需求
+        // 汽车登记
+        class Car  {
+            constructor(
+                make,
+                model,
+                year,
+                owner,
+                tag,
+                renewDate
+            ){
+                this.make = make;
+                this.model = model;
+                this.year = year;
+                this.owner = owner;
+                this.tag = tag;
+                this.renewDate = renewDate;
+            }
+        }
+
+        // 享元模式
+        function createCar(
+            make,
+            model,
+            year,
+            owner,
+            tag,
+            renewDate
+        ){
+            // car 是一个副本
+            let car = createCarFactory(make, model, year);
+            car.owner = owner;
+            car.tag = tag;
+            car.renewDate = renewDate;
+            return car;
+        }
+
+       
+        let createCarFactory = (() => {
+            let metaCar = {}
+            return function(make, model, year){
+                const key = `${make}${model}${year}`
+                if(metaCar[key]){
+                    return metaCar[key]
+                }else{
+                    let t = new Car(make, model, year)
+                    metaCar[key] = t
+                    return t;
+                }
+            }
+        })()
+
+        // 测试
+        let test = [];
+        for(let i = 0; i<20000; i++){
+            // test.push(createCar('东风', "型号", "2017", "owner" + i, 'tag'+ i, "renewDate"+i))
+            // 155MB
+            
+            test.push(new Car('东风', "型号", "2017", "owner" + i, 'tag'+ i, "renewDate"+i))
+            // 1399 MB
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Composite</title>
+</head>
+<body>
+    <script type='module' src="./typescript/composite.js"></script>
+    <script>
+      
+    // 组合模式使用的场景
+    // 有一群数据结构相同的都对象 对象
+    // 需要对这些对象 的部分或全部，有选择性的访问 
+    // 这样的场景适合使用组合模式
+
+    // 组合模式是
+    // 把相同的数据结构数据组合成各个层级【数】的虚拟对象
+    // 树的叶子节点全部是真实的数据
+    // 树的非叶子节点是由虚拟节点
+    // 通过从根节点，传入指定的参数
+    // 筛选叶子节点，访问；
+    class Student {
+        name;
+        type = "leaf"
+        constructor(name){
+            this.name = name;
+        }
+
+        goToClass(courseName){
+            console.log(`${this.name} 上 ${courseName} 课;`)
+        }
+    }
+
+    class Composite extends Student{
+        type = 'comp';
+        children = []
+        constructor(name){
+            super(name)
+        }
+        getChildren(name){
+            let children = []
+            if(name === undefined || name === null || this.name === name){
+                // 把当前全部的叶子对象添加进来
+                this.children.forEach(child => {
+                    if(child.type === 'comp'){
+                        children = [...children, ...child.getChildren()]
+                    }else{
+                        children = [...children, child];
+                    }
+                })
+            }else if(this.name !== name){ 
+                this.children.forEach(child => {
+                    if(child.type === 'comp'){
+                        children = [...children, ...child.getChildren(name)]
+                    }else if(child.name === name){
+                        children = [...children, child];
+                        return children;
+                    }
+                }) 
+            }else{
+                throw new Error('[出错]：getChildren(name)')
+            }
+            return children;
+        }
+
+        addChild(...arg){
+            this.children = [...this.children, ...arg]
+            return this;
+        }
+        goToClass(name, courseName){
+            let children = this.getChildren(name)
+            console.log('children: ', children)
+            children.forEach(student => {
+                student.goToClass(courseName)
+            })
+            return this;
+        }
+    }
+    let school = new Composite('school-1')
+    let class_1 = new Composite('school-1-class-1')
+    let class_2 = new Composite('school-1-class-2')
+    let group_1_1 = new Composite('school-1-class-1-group-1')
+    let group_1_2 = new Composite('school-1-class-1-group-2')
+    let group_2_1 = new Composite('school-1-class-2-group-1')
+    let group_2_2 = new Composite('school-1-class-2-group-2')
+    let students = []
+
+    for(let i =0; i< 10; i++){
+        students.push(new Student(i + "-name"))
+    }   
+    group_1_1.addChild(students[0]).addChild(students[1])
+    group_1_2.addChild(students[2], students[3])
+
+    group_2_1.addChild(students[4]).addChild(students[5])
+    group_2_2.addChild(students[6], students[7])
+    class_1.addChild(group_1_1).addChild(group_1_2);
+    class_2.addChild(group_2_1).addChild(group_2_2);
+    school.addChild(class_1).addChild(class_2);
+
+    // school.goToClass(null, '语文')
+
+    // school.goToClass("school-1-class-2-group-2", "数学")
+    // school.goToClass("6-name", "数学")
+    
+    // console.log('students: ', students)
+    // students.forEach(student => student.goToClass('语文'))
+
+     
+ 
+
+
+
+
+
+    </script>
+    
+</body>
+</html>
+
+
+
+ 

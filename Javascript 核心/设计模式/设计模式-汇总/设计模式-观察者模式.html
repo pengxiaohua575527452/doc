@@ -1,0 +1,77 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>观察者模式</title>
+</head>
+<body>
+    <!-- <script type="module" src="./typescript/observer.js"></script> -->
+
+    <script>
+
+// 浅拷贝
+let a = {
+    bill: {name: 'bill'}, 
+    fn: function(){ console.log('a')},
+    n: 1,
+    str: "string",
+    symbol: Symbol('symbol'),
+    u: undefined,
+    null: null,
+    bt: true,
+    bf: false,
+    arr: [1],
+}
+
+let b = Object.assign({},a) 
+// 下面操作不会同时修改 b 属性的值
+a.fn = function(){ console.log('b')} 
+a.n = 10,
+a.str = "--"
+a.symbol = Symbol('第二')
+a.u = "--undefined"
+a.null = "--null"
+a.bt = "--true"
+a.bf = "--false"
+
+// 下面的从左会同时修改 b 属性的值
+a.bill.name = "aa" 
+a.arr[0] = 10; 
+ 
+console.log(a, b)
+ 
+ 
+
+// 深拷贝
+ 
+let c = {jack: {name: 'jack'}, arr: [1]}
+function copy(source){
+    let o = {}
+    for(let key in source){
+        let value = source[key]
+        if(typeof value === "object" && value !== null){
+            // 递归的拷贝
+            o[key] = copy(value)
+        }else{
+            o[key] = source[key]
+        }
+    }
+    return o
+}
+let d = copy(c)
+// 不会同时修改 d 属性的值
+c.jack.name = "--jack"
+c.arr[0] = 10; 
+
+console.log(c, d)
+ 
+
+ 
+
+
+
+
+    </script>
+</body>
+</html>

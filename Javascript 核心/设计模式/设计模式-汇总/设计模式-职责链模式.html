@@ -1,0 +1,100 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>职责链模式</title>
+</head>
+<body>
+    <div class='div'>文本</div>
+    <style>
+        .div{
+            color: #eee;
+        }
+    </style>
+    <script>
+    // 如果一个请求有多个参数
+    // 且根据参数的不同会调用不同的处理方式
+    // 我们可以把不同的处理方式分别封装成一个个独立的处理器；
+    // 把请求同处理器解耦
+    // 请求直接用链承接
+    // 在链内实现选择处理器处理
+    // 在链上可以实现随时添加or删除处理器的实现方式
+    
+    // 请求
+    // 链
+    // 处理器
+    // 请求用链承接， 链是组合对象有处理器构成
+    // 请求 链 处理器 之间只有协议规范，没有任何的耦合；
+
+    // 如果一个参数对应多种处理逻辑，可以把每种处理逻辑单独封装起来，组合使用
+    // 类似于 策略模式 用来取代 大量的if else ；
+    // 实现在步修改基本对象的前提下，灵活组装业务逻辑的功能；
+    
+    /**
+     * 实例：
+     * 
+     * 需求： 
+     * 根据进度改变文本的颜色
+     */
+
+    // 基础模块
+    const _div_ = document.querySelector('.div');
+    
+
+    class Chain {
+        constructor(handler){
+            this.handler = handler;
+        }
+        setNextChain(nextChain){
+            this.nextChain = nextChain;
+        }
+        handleRequest(/*为了解耦 不能够设置参数*/){
+            
+            let result = this.handler.apply(this, arguments)
+            if(result === 'next'){
+                this.nextChain && this.nextChain.handleRequest.apply(this.nextChain, arguments)
+            }
+        }
+    }
+
+    
+    /**
+     * 处理器
+     * status === 状态
+    */
+    function setColorByStatusRed(status){
+        if(status === 1){
+            _div_.style.color = "red";
+        }else{
+            return "next"
+        }
+    }    
+
+    function setColorByStatusBlue(status){
+        if(status === 2){
+            _div_.style.color = "blue";
+
+        }else {
+            return 'next'
+        }
+    }
+
+    // 测试
+
+    const divChainSetColorRed = new Chain(setColorByStatusRed)
+    const divChainSetColorBlue = new Chain(setColorByStatusBlue)
+    divChainSetColorRed.setNextChain(divChainSetColorBlue)
+
+    let status = 2;
+    divChainSetColorRed.handleRequest(1)
+  
+
+
+
+
+
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,42 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<script>
+// 状态模式
+// 把事物的每一种状态都封装为一个类
+// 每一个类负责一个状态
+// 把请求委托给当前的状态对象 
+// 把切换状态的规则 实现分布在状态类种
+// 允许一个对象 内部状态改变时改变他的行为
+// 把状态和行为单独作为一个类；
+// 封装一系列的算法和行为
+
+
+
+// 需求
+// 每次按下开关 灯光进入不同的打开方式
+class Btn {
+    // 当前状态
+    currentState;
+    lightState = new LightState(this)
+
+    constructor(btn){
+        this.btn = btn
+
+        this.btn.addEventListener('click', () => {
+            this.currentState.btnPressed()
+        })
+    }
+
+
+}
+ 
+ 
+</script>
+</body>
+</html>

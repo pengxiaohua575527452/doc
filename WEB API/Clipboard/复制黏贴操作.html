@@ -1,0 +1,90 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+// 复制黏贴操作
+
+
+
+
+// 写入文本
+function testWriteText(str){
+    navigator
+    .clipboard
+    .writeText(str)
+    .then(res=> {
+        console.log('写入文本成功res: ', res)
+        testRedText()
+    })
+    .catch(err => {
+        console.log('写入文本失败err：', err)
+    })
+}
+
+// 读取文本
+function testRedText(){
+    navigator
+    .clipboard
+    .readText()
+    .then(res => {
+        console.log('读取文本res: ', res)
+    })
+    .catch(err => console.error('读取文本失败err: ', err))
+}
+
+// testWriteText('文本')
+
+
+
+
+// 写入 blob 数据
+function testWrite(blob){
+    console.log(blob)
+    // new ClipboardItem 键名类型 必须同 blob 类型相同
+    let clipboardItem = new ClipboardItem({"text/plain": blob})
+    navigator
+    .clipboard
+    .write([clipboardItem])
+    .then(res => { 
+        console.log('写入blob 成功res： ', res)
+        testRead()
+    })
+    .catch(err => console.error('写入blob失败error: ', err))
+}
+
+
+
+
+
+// 读取 blob 数据
+function testRead(){
+    navigator
+    .clipboard
+    .read()
+    .then(clipboardItems=> {
+        // 
+        return clipboardItems[0].getType('text/plain')
+    })
+    .then(blob => {
+        return blob.text()
+    })
+    .then(text => {
+        console.log('获取blob数据成功： ', text)
+    })
+    .catch(err => console.error('获取剪切板数据失败err: ', err))
+}
+
+testWrite(new Blob(["文本内容"], { type: "text/plain"}))
+
+
+
+
+</script>
+</body>
+</html>
